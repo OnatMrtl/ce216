@@ -3,10 +3,12 @@ package org.example.b;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.control.*;
@@ -17,10 +19,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.scene.text.Font;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -48,11 +53,7 @@ public class HelloApplication extends Application {
                         game.getYearString().contains(searchText.toLowerCase()))
                 .collect(Collectors.toList());
 
-        gameList.setAll(filteredGames); // ListView'in içeriğini güncelle
-    }
-
-    public void benjaminFormatter(Button benjamin) {
-        benjamin.setText("NABER LAN");
+        gameList.setAll(filteredGames);
     }
 
     @Override
@@ -71,87 +72,143 @@ public class HelloApplication extends Application {
         allGames.add(new Game("Sekiro: Shadows Die Twice","Action Role-Playing","FromSoftware","Activision",2019,1001,"Git GUD",814380,93.4f,null ));
 
         Collections.sort(allGames, Comparator.comparing(Game::getGameName));
-        // ObservableList oluştur ve ListView'e bağla
         gameList = FXCollections.observableArrayList(allGames);
         ListView<Game> gameListView = new ListView<>(gameList);
+        gameListView.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
+        gameListView.prefHeightProperty().bind(stage.heightProperty().multiply(0.8));
         gameListView.setMinWidth(250);
 
-
-        // Arama çubuğu (Search Bar)
-        TextField searchField = new TextField();
-        searchField.setPromptText("Oyun ara...");
-        searchField.setMinHeight(30);
-
-        // ListView'de sadece oyun isimlerini göstermek için CellFactory kullan
         gameListView.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(Game game, boolean empty) {
                 super.updateItem(game, empty);
                 if (empty || game == null) {
                     setText(null);
+                    setStyle("-fx-control-inner-background: transparent;");
                 } else {
-                    setText(game.getGameName()); // Sadece oyun ismi gösterilecek
+                    setText(game.getGameName());
+                    setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-control-inner-background: transparent;");
+                    setBorder(new Border(new BorderStroke(Color.web("#244658",0.09),BorderStrokeStyle.SOLID,new CornerRadii(5),BorderWidths.DEFAULT)));
                 }
             }
         });
+        gameListView.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5 ");
 
-        // Sağ tarafta oyun detaylarını gösterecek VBox
+        TextField searchField = new TextField();
+        searchField.setPromptText("Oyun ara...");
+        searchField.prefWidthProperty().bind(stage.widthProperty().multiply(0.3)); // Arama çubuğu %30 genişlikte
+        searchField.prefHeight(30) ;
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterGameList(newValue);
+        });
+        searchField.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5 ");
+
         VBox detailBox = new VBox(10);
         detailBox.setPadding(new Insets(10));
+        detailBox.prefWidthProperty().bind(stage.widthProperty().multiply(0.6)); // Detay kutusu %60 genişlikte
 
-        // Oyun resmi göstermek için ImageView
         ImageView gameImageView = new ImageView();
-        gameImageView.setFitWidth(200); // Resmin genişliği
-        gameImageView.setFitHeight(300);
+        gameImageView.fitWidthProperty().bind(stage.widthProperty().multiply(0.2)); // Oyun resmi %20 genişlikte
+        gameImageView.fitHeightProperty().bind(stage.heightProperty().multiply(0.5)); // Oyun resmi %50 yükseklikte
+        gameImageView.setPreserveRatio(true);
 
         HBox InfoBox = new HBox(10);
-
-        // ListView seçimi değiştiğinde detayları güncelle
         gameListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                // Önce InfoBox içeriğini temizle
                 InfoBox.getChildren().clear();
-
-                // Yeni resmi yükle
                 Image image = new Image(newValue.getCoverPath());
                 gameImageView.setImage(image);
-
-                // Yeni bilgileri oluştur
                 Label titleLabel = new Label( newValue.getGameName());
+                titleLabel.setTextFill(Color.WHITE);
                 titleLabel.setFont(Font.font("Arial", FontWeight.BOLD,24));
-                Label genreLabel = new Label("Tür: "+newValue.getGameGenre());
-                Label developerLabel = new Label("Geliştirici: " + newValue.getDeveloperName());
-                Label publisherLabel = new Label("Yayıncı: " + newValue.getPublisherName());
-                Label yearLabel = new Label("Çıkış Yılı: " + newValue.getReleaseYear());
-                Label hoursPlayedLabel = new Label("Oynama süresi: " + newValue.getHoursPlayed()+" saat");
-                Label ratingLabel = new Label("Puan: " + newValue.getPublicRating()+"/100");
-                Label descriptionLabel = new Label("Açıklama: " + newValue.getGameInfo());
-                Label steamIDLabel = new Label("SteamID: " + newValue.getSteamID());
 
-                // Detayları güncelle
-                detailBox.getChildren().setAll(titleLabel, genreLabel,hoursPlayedLabel, developerLabel, publisherLabel, yearLabel, ratingLabel, descriptionLabel, steamIDLabel);
+                TextFlow genreFlow = new TextFlow(
+                    new Text("Tür: ") {{ setFont(Font.font("Arial", FontWeight.BOLD, 12)); setFill(Color.WHITE); }},
+                    new Text(newValue.getGameGenre()) {{ setFont(Font.font("Arial", FontWeight.NORMAL, 12)); setFill(Color.WHITE); }}
+                );
+
+                TextFlow developerFlow = new TextFlow(
+                    new Text("Geliştirici: ") {{ setFont(Font.font("Arial", FontWeight.BOLD, 12)); setFill(Color.WHITE); }},
+                    new Text(newValue.getDeveloperName()) {{ setFont(Font.font("Arial", FontWeight.NORMAL, 12)); setFill(Color.WHITE); }}
+                );
+
+                TextFlow publisherFlow = new TextFlow(
+                    new Text("Yayıncı: ") {{ setFont(Font.font("Arial", FontWeight.BOLD, 12)); setFill(Color.WHITE); }},
+                    new Text(newValue.getPublisherName()) {{ setFont(Font.font("Arial", FontWeight.NORMAL, 12)); setFill(Color.WHITE); }}
+                );
+
+                TextFlow yearFlow = new TextFlow(
+                    new Text("Çıkış Yılı: ") {{ setFont(Font.font("Arial", FontWeight.BOLD, 12)); setFill(Color.WHITE); }},
+                    new Text(String.valueOf(newValue.getReleaseYear())) {{ setFont(Font.font("Arial", FontWeight.NORMAL, 12)); setFill(Color.WHITE); }}
+                );
+
+                TextFlow hoursPlayedFlow = new TextFlow(
+                    new Text("Oynama süresi: ") {{ setFont(Font.font("Arial", FontWeight.BOLD, 12)); setFill(Color.WHITE); }},
+                    new Text(newValue.getHoursPlayed() + " saat") {{ setFont(Font.font("Arial", FontWeight.NORMAL, 12)); setFill(Color.WHITE); }}
+                );
+
+                TextFlow ratingFlow = new TextFlow(
+                    new Text("Puan: ") {{ setFont(Font.font("Arial", FontWeight.BOLD, 12)); setFill(Color.WHITE); }},
+                    new Text(newValue.getPublicRating() + "/100") {{ setFont(Font.font("Arial", FontWeight.NORMAL, 12)); setFill(Color.WHITE); }}
+                );
+
+                TextFlow descriptionFlow = new TextFlow(
+                    new Text("Açıklama: ") {{ setFont(Font.font("Arial", FontWeight.BOLD, 12)); setFill(Color.WHITE); }},
+                    new Text(newValue.getGameInfo()) {{ setFont(Font.font("Arial", FontWeight.NORMAL, 12)); setFill(Color.WHITE); }}
+                );
+
+                TextFlow steamIDFlow = new TextFlow(
+                    new Text("SteamID: ") {{ setFont(Font.font("Arial", FontWeight.BOLD, 12)); setFill(Color.WHITE); }},
+                    new Text(String.valueOf(newValue.getSteamID())) {{ setFont(Font.font("Arial", FontWeight.NORMAL, 12)); setFill(Color.WHITE); }}
+                );
+
+                detailBox.getChildren().setAll(titleLabel, genreFlow, hoursPlayedFlow, developerFlow, publisherFlow,
+                        yearFlow, ratingFlow, descriptionFlow, steamIDFlow);
                 InfoBox.getChildren().addAll(gameImageView, detailBox);
             }
         });
 
-        // Arama çubuğu için dinleyici ekle
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterGameList(newValue);
-        });
-
+        HBox.setHgrow(gameListView, Priority.ALWAYS);
+        VBox.setVgrow(detailBox, Priority.ALWAYS);
+        VBox.setVgrow(gameImageView, Priority.ALWAYS);
 
         // Sol tarafta arama çubuğu ve liste
         VBox leftBox = new VBox(10, searchField, gameListView);
 
         // Ana layout olan HBox
         HBox appIn = new HBox(20, leftBox, InfoBox);
+        appIn.prefWidthProperty().bind(stage.widthProperty()); // Ana bölge ekran genişliği kadar
         appIn.setPadding(new Insets(10));
         appIn.setFillHeight(true);
 
+        Border buttonBorder = new Border(new BorderStroke(Color.web("#244658"),BorderStrokeStyle.SOLID,new CornerRadii(5),new BorderWidths(2)));
+
         Label clockLabel = new Label();
+        clockLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        clockLabel.setTextFill(Color.WHITE);
+        Timeline clock = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+            clockLabel.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        }));
+        clock.setCycleCount(Timeline.INDEFINITE);
+        clock.play();
+
+
         Button libButton = new Button("Kütüphane");
+        libButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        libButton.setBorder(buttonBorder);
+        libButton.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-prompt-text-fill: white;");
+
         Button settingsButton = new Button("Ayarlar");
+        settingsButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        settingsButton.setBorder(buttonBorder);
+        settingsButton.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-prompt-text-fill: white;");
+
         Button addButton = new Button("+");
+        addButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        addButton.setBorder(buttonBorder);
+        addButton.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-prompt-text-fill: white;");
+
         BorderPane menuPane = new BorderPane();
 
         HBox leftMenu = new HBox(5,addButton,clockLabel);
@@ -162,74 +219,63 @@ public class HelloApplication extends Application {
         rightMenu.setAlignment(Pos.CENTER_RIGHT);
         rightMenu.setPadding(new Insets(5, 10, 5, 10));
 
-
-        Timeline clock = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-            clockLabel.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-        }));
-        clock.setCycleCount(Timeline.INDEFINITE);
-        clock.play();
-        clockLabel.setStyle("-fx-font-size: 14px; -fx-padding: 5px;");
-
         menuPane.setLeft(rightMenu);
         menuPane.setRight(leftMenu);
-        menuPane.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         menuPane.setPadding(new Insets(5));
+        Separator separator = new Separator();
+        Platform.runLater(() -> {
+            Node line = separator.lookup(".line");
+            if (line != null) {
+                line.setStyle("-fx-background-color: #244658;");
+            }
+        });
 
-        VBox root = new VBox(menuPane, appIn);
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            gameListView.setPrefWidth(newVal.doubleValue() * 0.3);
+            detailBox.setPrefWidth(newVal.doubleValue() * 0.6);
+        });
+
+        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
+            gameListView.setPrefHeight(newVal.doubleValue() * 0.8);
+            gameImageView.setFitHeight(newVal.doubleValue() * 0.5);
+        });
+
+        HBox settingsHBox = new HBox(5);
+        settingsHBox.setAlignment(Pos.CENTER);
+
+        VBox settingsPane = new VBox(settingsHBox);
+        settingsPane.setAlignment(Pos.CENTER);
+        settingsPane.getChildren().add(new Label("Ayarlar Ekranı"));
+        settingsPane.setVisible(false);
+
+        libButton.setOnAction(e -> {
+            appIn.setVisible(true);
+            settingsHBox.setVisible(false);
+        });
+
+        settingsButton.setOnAction(e -> {
+            appIn.setVisible(false);
+            settingsHBox.setVisible(true);
+        });
+
+        VBox root = new VBox(menuPane, separator, appIn);
+        Image backgroundImage = new Image("file:src/main/Cover Arts/Steam Background.jpeg");
+        BackgroundImage background = new BackgroundImage(
+                backgroundImage,
+                BackgroundRepeat.NO_REPEAT, // Yatay tekrar
+                BackgroundRepeat.NO_REPEAT, // Dikey tekrar
+                BackgroundPosition.CENTER,  // Konum
+                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+        );
+        root.setBackground(new Background(background));
 
         Scene windowedScene = new Scene(root);
-        Scene fullscreenScene = new Scene(new VBox(new Label("Full Screen Mode")));
 
         stage.setTitle("STEAM2.0 v31.12.23");
-
-
         stage.setScene(windowedScene);
         stage.setMinWidth(800);
         stage.setMinHeight(500);
-        windowedScene.setFill(Color.DEEPSKYBLUE);
+        windowedScene.setFill(Color.DARKBLUE);
         stage.show();
-    }
-}
-class Game {
-    private String gameName;
-    private String gameGenre;
-    private String developerName;
-    private String publisherName;
-    private int releaseYear;
-    private float hoursPlayed;
-    private String gameInfo;
-    private int SteamID;
-    private float publicRating;
-    private String coverPath;
-
-    public Game(String gameName,String gameGenre, String developerName, String publisherName, int releaseYear, float hoursPlayed, String gameInfo, int SteamID, float publicRating, String coverPath) {
-        this.gameInfo = gameInfo;
-        this.gameName = gameName;
-        this.gameGenre = gameGenre;
-        this.hoursPlayed = hoursPlayed;
-        this.publisherName = publisherName;
-        this.releaseYear = releaseYear;
-        this.developerName = developerName;
-        this.SteamID = SteamID;
-        this.publicRating = publicRating;
-        if (coverPath != null && new java.io.File(coverPath.replace("file:", "")).exists()) {
-            this.coverPath = coverPath;
-        } else {
-            this.coverPath = "file:src/main/Cover Arts/NemaFoto.jpg";
-        }
-    }
-
-    public float getHoursPlayed() { return hoursPlayed; }
-    public String getGameInfo() { return gameInfo; }
-    public String getGameName() { return gameName; }
-    public String getPublisherName() { return publisherName; }
-    public int getReleaseYear() { return releaseYear; }
-    public String getDeveloperName() { return developerName; }
-    public int getSteamID() { return SteamID; }
-    public float getPublicRating() { return publicRating; }
-    public String getCoverPath() { return coverPath; }
-    public String getGameGenre() { return gameGenre; }
-    public String getYearString(){
-        return String.valueOf(getReleaseYear());
     }
 }
