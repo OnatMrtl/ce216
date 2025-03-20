@@ -20,10 +20,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -36,11 +33,19 @@ public class HelloApplication extends Application {
     private ObservableList<Game> gameList; // Dinamik liste
     private List<Game> allGames; // Tüm oyunların saklandığı liste
     private static Locale currentLocale = new Locale("tr"); // Varsayılan Türkçe
-    public Button settingsButton = new Button();
-    public TextField searchField = new TextField();
-    public Button addButton = new Button("+");
-    public Button libButton = new Button();
-    public Text genreText = new Text(messages.getString("genre"));
+    protected Button settingsButton = new Button();
+    protected TextField searchField = new TextField();
+    protected Button addButton = new Button("+");
+    protected Button libButton = new Button();
+    protected Text genreText = new Text(messages.getString("genre"));
+    protected Text developerText = new Text(messages.getString("developer"));
+    protected Text publisherText = new Text(messages.getString("publisher"));
+    protected Text releaseYearText = new Text(messages.getString("releaseDate"));
+    protected Text hoursPlayedText = new Text(messages.getString("hoursPlayed"));
+    protected Text ratingText = new Text(messages.getString("rating"));
+    protected Text infoText = new Text(messages.getString("info"));
+    protected Text hourText = new Text(messages.getString("hour"));
+    protected Text languageText = new Text(messages.getString("language"));
 
     private static ResourceBundle messages = ResourceBundle.getBundle("lang", currentLocale);
 
@@ -148,66 +153,96 @@ public class HelloApplication extends Application {
                         }}
                 );
 
+                developerText.setFont(boldFont);
+                developerText.setFill(Color.WHITE);
+
                 TextFlow developerFlow = new TextFlow(
-                        new Text("Geliştirici: ") {{
-                            setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                        developerText,
+                        new Text(": ") {{
+                            setFont(boldFont);
                             setFill(Color.WHITE);
-                        }},
+                        }}
+                        ,
                         new Text(newValue.getDeveloperName()) {{
                             setFont(Font.font("Arial", FontWeight.NORMAL, 12));
                             setFill(Color.WHITE);
                         }}
                 );
 
+                publisherText.setFont(boldFont);
+                publisherText.setFill(Color.WHITE);
+
                 TextFlow publisherFlow = new TextFlow(
-                        new Text("Yayıncı: ") {{
-                            setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                        publisherText,
+                        new Text(": ") {{
+                            setFont(boldFont);
                             setFill(Color.WHITE);
-                        }},
+                        }}
+                        ,
                         new Text(newValue.getPublisherName()) {{
                             setFont(Font.font("Arial", FontWeight.NORMAL, 12));
                             setFill(Color.WHITE);
                         }}
                 );
 
+                releaseYearText.setFont(boldFont);
+                releaseYearText.setFill(Color.WHITE);
+
                 TextFlow yearFlow = new TextFlow(
-                        new Text("Çıkış Yılı: ") {{
-                            setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                        releaseYearText,
+                        new Text(": ") {{
+                            setFont(boldFont);
                             setFill(Color.WHITE);
-                        }},
+                        }}
+                        ,
                         new Text(String.valueOf(newValue.getReleaseYear())) {{
                             setFont(Font.font("Arial", FontWeight.NORMAL, 12));
                             setFill(Color.WHITE);
                         }}
                 );
 
+                hoursPlayedText.setFont(boldFont);
+                hoursPlayedText.setFill(Color.WHITE);
+                hourText.setFill(Color.WHITE);
+
                 TextFlow hoursPlayedFlow = new TextFlow(
-                        new Text("Oynama süresi: ") {{
-                            setFont(Font.font("Arial", FontWeight.BOLD, 12));
-                            setFill(Color.WHITE);
-                        }},
-                        new Text(newValue.getHoursPlayed() + " saat") {{
-                            setFont(Font.font("Arial", FontWeight.NORMAL, 12));
+                        hoursPlayedText,
+                        new Text(": ") {{
+                            setFont(boldFont);
                             setFill(Color.WHITE);
                         }}
-                );
-
-                TextFlow ratingFlow = new TextFlow(
-                        new Text("Puan: ") {{
-                            setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                        ,
+                        new Text(newValue.getHoursPlayed() +" ") {{
+                            setFont(Font.font("Arial", FontWeight.NORMAL, 12));
                             setFill(Color.WHITE);
                         }},
+                        hourText
+                );
+
+                ratingText.setFont(boldFont);
+                ratingText.setFill(Color.WHITE);
+                TextFlow ratingFlow = new TextFlow(
+                        ratingText,
+                        new Text(": ") {{
+                            setFont(boldFont);
+                            setFill(Color.WHITE);
+                        }}
+                        ,
                         new Text(newValue.getPublicRating() + "/100") {{
                             setFont(Font.font("Arial", FontWeight.NORMAL, 12));
                             setFill(Color.WHITE);
                         }}
                 );
 
+                infoText.setFont(boldFont);
+                infoText.setFill(Color.WHITE);
                 TextFlow descriptionFlow = new TextFlow(
-                        new Text("Açıklama: ") {{
-                            setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                        infoText,
+                        new Text(": ") {{
+                            setFont(boldFont);
                             setFill(Color.WHITE);
-                        }},
+                        }}
+                        ,
                         new Text(newValue.getGameInfo()) {{
                             setFont(Font.font("Arial", FontWeight.NORMAL, 12));
                             setFill(Color.WHITE);
@@ -230,12 +265,16 @@ public class HelloApplication extends Application {
                 InfoBox.getChildren().addAll(gameImageView, detailBox);
             }
         });
+        Button filterButton =new Button();
+        filterButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5 ");
+        filterButton.setPrefSize(30,30);
+        HBox searchBox = new HBox(10,searchField,filterButton);
 
         HBox.setHgrow(gameListView, Priority.ALWAYS);
         VBox.setVgrow(detailBox, Priority.ALWAYS);
         VBox.setVgrow(gameImageView, Priority.ALWAYS);
 
-        VBox leftBox = new VBox(10, searchField, gameListView);
+        VBox leftBox = new VBox(10, searchBox, gameListView);
 
         HBox appIn = new HBox(20, leftBox, InfoBox);
         appIn.prefWidthProperty().bind(stage.widthProperty());
@@ -243,6 +282,7 @@ public class HelloApplication extends Application {
         appIn.setFillHeight(true);
 
         Border buttonBorder = new Border(new BorderStroke(Color.web("#244658"), BorderStrokeStyle.SOLID, new CornerRadii(5), new BorderWidths(2)));
+        Border buttonBorderBold = new Border(new BorderStroke(Color.web("#244658"),BorderStrokeStyle.SOLID, new CornerRadii(5), new BorderWidths(3)));
 
         Label clockLabel = new Label();
         clockLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -257,7 +297,7 @@ public class HelloApplication extends Application {
 
         libButton.setText(messages.getString("library"));
         libButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        libButton.setBorder(buttonBorder);
+        libButton.setBorder(buttonBorderBold);
         libButton.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-prompt-text-fill: white;");
 
 
@@ -284,13 +324,9 @@ public class HelloApplication extends Application {
         menuPane.setLeft(rightMenu);
         menuPane.setRight(leftMenu);
         menuPane.setPadding(new Insets(5));
+
         Separator separator = new Separator();
-        Platform.runLater(() -> {
-            Node line = separator.lookup(".line");
-            if (line != null) {
-                line.setStyle("-fx-background-color: #244658;");
-            }
-        });
+
 
         stage.widthProperty().addListener((obs, oldVal, newVal) -> {
             gameListView.setPrefWidth(newVal.doubleValue() * 0.3);
@@ -302,13 +338,24 @@ public class HelloApplication extends Application {
             gameImageView.setFitHeight(newVal.doubleValue() * 0.5);
         });
 
-        HBox settingsHBox = new HBox(5);
-        settingsHBox.setAlignment(Pos.CENTER_LEFT);
-        ComboBox<String> languageSelector = new ComboBox<>();
-        languageSelector.getItems().addAll("Türkçe", "English");
-        settingsHBox.getChildren().add(languageSelector);
-        languageSelector.setStyle("-fx-background-color: transparent; -fx-progress-color: white;-fx-text-fill: white;-fx-border-color: #244658;-fx-border-radius: 5;");
+        languageText.setFill(Color.WHITE);
+        languageText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 
+        HBox settingsHBox = new HBox(5);
+        VBox settingsVBox = new VBox(5);
+        ComboBox<String> languageSelector = new ComboBox<>();
+        HBox langHBox = new HBox(5,languageText,new Text(" "),languageSelector);
+
+        languageSelector.getItems().addAll("Türkçe", "English");
+        languageSelector.setValue("Türkçe");
+        languageSelector.setStyle("-fx-background-color: transparent; -fx-progress-color: transparent;-fx-text-fill: white;-fx-border-color: #244658;-fx-border-radius: 5;");
+
+        settingsVBox.getChildren().addAll(langHBox);
+        settingsHBox.getChildren().add(settingsVBox);
+
+        settingsVBox.setAlignment(Pos.CENTER);
+        langHBox.setAlignment(Pos.CENTER);
+        settingsHBox.setAlignment(Pos.CENTER);
 
         languageSelector.setOnAction(event -> {
             String selectedLang = languageSelector.getValue();
@@ -321,17 +368,48 @@ public class HelloApplication extends Application {
             updateLanguage();
         });
 
+        languageSelector.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setStyle("-fx-background-color: #244658; -fx-text-fill: white;-fx-control-inner-background: transparent;-fx-border-radius: 5;-fx-border-color: white;-fx-border-width: 0.1;-fx-background-radius: 5;-fx-background-insets: 0;");
+                }
+            }
+        });
+
+        languageSelector.setButtonCell(new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-control-inner-background: transparent;-fx-border-radius: 5;");
+                }
+            }
+        });
+
+        VBox root = new VBox(menuPane, separator, appIn);
+
         libButton.setOnAction(e -> {
-            appIn.setVisible(true);
-            settingsHBox.setVisible(false);
+            root.getChildren().clear();
+            root.getChildren().addAll(menuPane,separator,appIn);
+            libButton.setBorder(buttonBorderBold);
+            settingsButton.setBorder(buttonBorder);
         });
 
         settingsButton.setOnAction(e -> {
-            appIn.setVisible(false);
-            settingsHBox.setVisible(true);
+            root.getChildren().clear();
+            root.getChildren().addAll(menuPane,separator,settingsHBox);
+            libButton.setBorder(buttonBorder);
+            settingsButton.setBorder(buttonBorderBold);
         });
-
-        VBox root = new VBox(menuPane, separator, appIn, settingsHBox);
 
         
         Image backgroundImage = new Image("file:src/main/Cover Arts/Steam Background.jpeg");
@@ -359,5 +437,13 @@ public class HelloApplication extends Application {
         addButton.setText(messages.getString("add"));
         searchField.setPromptText(messages.getString("search"));
         genreText.setText(messages.getString("genre"));
+        developerText.setText(messages.getString("developer"));
+        publisherText.setText(messages.getString("publisher"));
+        releaseYearText.setText(messages.getString("releaseDate"));
+        hoursPlayedText.setText(messages.getString("hoursPlayed"));
+        ratingText.setText(messages.getString("rating"));
+        infoText.setText(messages.getString("info"));
+        hourText.setText(messages.getString("hour"));
+        languageText.setText(messages.getString("language"));
     }
 }
