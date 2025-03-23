@@ -49,6 +49,7 @@ public class HelloApplication extends Application {
 
     private static ResourceBundle messages = ResourceBundle.getBundle("lang", currentLocale);
 
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -64,15 +65,15 @@ public class HelloApplication extends Application {
                 .collect(Collectors.toList());
 
         gameList.setAll(filteredGames);
-    }
 
+    }
 
     @Override
     public void start(Stage stage) {
         allGames = new ArrayList<>();
         allGames.add(new Game("Batman Arkham Knight", "Action-Adventure, Open World, Superhero", "Rocksteady Studios", "Warner Bros. Interactive Entertainment", 2015, 20, "Batman oluyon milleti dövüyon", 208650, 94.4f, "file:src/main/Cover Arts/Batman Arkham Knight Cover Art.jpg"));
         allGames.add(new Game("Bloodborne", "Action Role-Playing", "FromSoftware", "Sony Computer Entertainment", 2015, 44, "Kılıcı alıyon bakıyon karşında canavar kesecem diyon ölüyon yirmi yıl geri gidiyon", 0, 89.5f, null));
-        allGames.add(new Game("Dark Souls II Scholar of the First Sin", "Action Role-Playing", "FromSoftware, QLOC", "Bandai Namco Entertainment", 2017, 100, "Kılıcı alıp ölüyon deliriyon", 0, 89.5f, "file:src/main/Cover Arts/Dark Souls II Scholar of th First Sin Cover Art.jpg"));
+        allGames.add(new Game("Dark Souls II: Scholar of the First Sin", "Action Role-Playing", "FromSoftware, QLOC", "Bandai Namco Entertainment", 2017, 100, "Kılıcı alıp ölüyon deliriyon", 0, 89.5f, "file:src/main/Cover Arts/Dark Souls II Scholar of th First Sin Cover Art.jpg"));
         allGames.add(new Game("Dark Souls III", "Action Role-Playing", "FromSoftware", "Sony Computer Entertaiment", 2019, 102.8f, "BAK BİR VARIM BİR YOKUM", 0, 92.5f, "file:src/main/Cover Arts/Dark Souls III Cover Art.jpeg"));
         allGames.add(new Game("Dark Souls Remastered", "Action Role-Playing", "FromSoftware", "Bandai Namco Entertainment", 2022, 37, "Öldün çık", 0, 96.5f, "file:src/main/Cover Arts/Dark Souls Remastered Cover Art.jpeg"));
         allGames.add(new Game("EA Football Club 25", "Sports, Football", "", "", 2015, 44, "", 0, 83.5f, null));
@@ -270,11 +271,25 @@ public class HelloApplication extends Application {
         filterButton.setPrefSize(30,30);
         HBox searchBox = new HBox(10,searchField,filterButton);
 
+        Button sortByNameBtn = new Button("Name");
+        Button sortByHoursBtn = new Button("Hours");
+        Button sortByRatingBtn = new Button("Rating");
+        Button sortByYearBtn = new Button("Year");
+
+        sortByNameBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;");
+        sortByHoursBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;");
+        sortByRatingBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;");
+        sortByYearBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;");
+
         HBox.setHgrow(gameListView, Priority.ALWAYS);
         VBox.setVgrow(detailBox, Priority.ALWAYS);
         VBox.setVgrow(gameImageView, Priority.ALWAYS);
 
-        VBox leftBox = new VBox(10, searchBox, gameListView);
+        HBox sortBox = new HBox(10, sortByNameBtn, sortByHoursBtn, sortByRatingBtn, sortByYearBtn);
+        sortBox.setAlignment(Pos.CENTER_LEFT);
+        sortBox.setPadding(new Insets(10, 0, 0, 0));
+
+        VBox leftBox = new VBox(10, searchBox, sortBox, gameListView);
 
         HBox appIn = new HBox(20, leftBox, InfoBox);
         appIn.prefWidthProperty().bind(stage.widthProperty());
