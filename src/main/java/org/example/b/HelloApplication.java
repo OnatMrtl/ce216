@@ -85,107 +85,22 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) {
         String savePath = "games.json";
+        genreText = new Text(messages.getString("genre"));
+        developerText = new Text(messages.getString("developer"));
+        publisherText = new Text(messages.getString("publisher"));
+        releaseYearText = new Text(messages.getString("releaseDate"));
+        hoursPlayedText = new Text(messages.getString("hoursPlayed"));
+        ratingText = new Text(messages.getString("rating"));
+        infoText = new Text(messages.getString("info"));
+        hourText = new Text(messages.getString("hour"));
+        languageText = new Text(messages.getString("language"));
         allGames = readGamesFromJson(savePath);
         if (allGames.isEmpty()) {
             allGames = new ArrayList<>();
             // Varsayılan oyunlar burada eklenebilir
             saveGamesToJson(allGames, savePath);
         }
-        allGames.add(new Game("Batman Arkham Knight", "Action-Adventure, Open World, Superhero", "Rocksteady Studios", "Warner Bros. Interactive Entertainment", 2015, 20, "Batman oluyon milleti dövüyon", 208650, 94.4f, "file:src/main/Cover Arts/Batman Arkham Knight Cover Art.jpg"));
-        allGames.add(new Game("Bloodborne", "Action Role-Playing", "FromSoftware", "Sony Computer Entertainment", 2015, 44, "Kılıcı alıyon bakıyon karşında canavar kesecem diyon ölüyon yirmi yıl geri gidiyon", 0, 89.5f, null));
-        allGames.add(new Game("Dark Souls II: Scholar of the First Sin", "Action Role-Playing", "FromSoftware, QLOC", "Bandai Namco Entertainment", 2017, 100, "Kılıcı alıp ölüyon deliriyon", 0, 89.5f, "file:src/main/Cover Arts/Dark Souls II Scholar of th First Sin Cover Art.jpg"));
-        allGames.add(new Game("Dark Souls III", "Action Role-Playing", "FromSoftware", "Sony Computer Entertaiment", 2019, 102.8f, "BAK BİR VARIM BİR YOKUM", 0, 92.5f, "file:src/main/Cover Arts/Dark Souls III Cover Art.jpeg"));
-        allGames.add(new Game("Dark Souls Remastered", "Action Role-Playing", "FromSoftware", "Bandai Namco Entertainment", 2022, 37, "Öldün çık", 0, 96.5f, "file:src/main/Cover Arts/Dark Souls Remastered Cover Art.jpeg"));
-        allGames.add(new Game("EA Football Club 25", "Sports, Football", "", "", 2015, 44, "", 0, 83.5f, null));
-        allGames.add(new Game("Elden Ring", "Open World, Action-Adventure", "FromSoftware", "Bandai Namco Entertainment", 2022, 44, "Açık dünyada kılıçla ölüyon", 1245620, 96.3f, "file:src/main/Cover Arts/Elden Ring Cover Art.jpg"));
-        allGames.add(new Game("Hades", "Rouge-Like, Adventure", "SuperGiant Games", "SuperGiant Games", 2015, 44, "Tanrıların gücünü alıyon ölüyon", 0, 92.4f, null));
-        allGames.add(new Game("Minecraft", "Sandbox, Survival", "Mojang Studios", "Mojang Studios", 2011, 1002.2f, "Küpürürsün BLOK BLOK BLOK", 0, 98.7f, "file:src/main/Cover Arts/Minecraft Cover Art.jpg"));
-        allGames.add(new Game("Resident Evil 4", "Survival Horror, Third-Person Shooter", "Capcom Production Studio 4", "Capcom", 2005, 28.1f, "Zombi var ateş ediyon", 254700, 89.6f, "file:src/main/Cover Arts/Resident Evil 4 Cover Art.jpeg"));
-        allGames.add(new Game("Sekiro: Shadows Die Twice", "Action Role-Playing", "FromSoftware", "Activision", 2019, 1001, "Git GUD", 814380, 93.4f, null));
-        allGames.add(new Game(
-                "The Witcher 3: Wild Hunt",
-                "Action RPG, Open World, Fantasy",
-                "CD Projekt Red",
-                "CD Projekt",
-                2015,
-                85.3f,
-                "Büyülerle ve kılıçla canavar avladığın epik bir hikaye; politik entrikalar, seçimler ve bol bol Gwent kart oyunu.",
-                292030,
-                97.6f,
-                "file:src/main/Cover Arts/The Witcher 3 Cover Art.jpg"
-        ));
 
-        allGames.add(new Game(
-                "Hollow Knight",
-                "Metroidvania, Indie, Platformer",
-                "Team Cherry",
-                "Team Cherry",
-                2017,
-                34.7f,
-                "Sessiz bir kahramanla yeraltı krallığında kaybolmuş ruhlar ve karanlık sırlarla dolu bir yolculuğa çık.",
-                367520,
-                94.2f,
-                "file:src/main/Cover Arts/Hollow Knight Cover Art.jpg"
-        ));
-
-        allGames.add(new Game(
-                "Red Dead Redemption 2",
-                "Open World, Western, Action-Adventure",
-                "Rockstar Studios",
-                "Rockstar Games",
-                2018,
-                112.9f,
-                "Bir kanun kaçağının gözünden, Amerika'nın değişen yüzüyle birlikte çürüyen bir çetenin hikayesi.",
-                1174180,
-                96.5f,
-                "file:src/main/Cover Arts/Red Dead Redemption 2 Cover Art.jpg"
-        ));
-
-        allGames.add(new Game(
-                "Celeste",
-                "Platformer, Indie, Pixel Art",
-                "Matt Makes Games",
-                "Matt Makes Games",
-                2018,
-                12.6f,
-                "Kendi içsel dağını tırmanmaya çalışan bir karakterin duygusal ve zorlu yolculuğu.",
-                504230,
-                93.7f,
-                "file:src/main/Cover Arts/Celeste Cover Art.jpg"
-        ));
-
-        allGames.add(new Game(
-                "Portal 2",
-                "Puzzle, First-Person, Sci-Fi",
-                "Valve",
-                "Valve",
-                2011,
-                9.8f,
-                "Zekice hazırlanmış bulmacalar ve efsanevi yapay zeka GLaDOS ile mizah dolu bir deneyim.",
-                620,
-                95.3f,
-                "file:src/main/Cover Arts/Portal 2 Cover Art.jpg"
-        ));
-        allGames.add(new Game("God of War", "Action, Adventure", "Santa Monica Studio", "Sony Interactive Entertainment", 2018, 42.5f, "Kratos oğluyla birlikte tanrılara karşı bir yolculuğa çıkıyor.", 0, 96.0f, null));
-        allGames.add(new Game("Cyberpunk 2077", "RPG, Open World, Sci-Fi", "CD Projekt Red", "CD Projekt", 2020, 65.2f, "V'nin distopik bir şehirde hayatta kalma mücadelesi.", 1091500, 89.5f, null));
-        allGames.add(new Game("Stardew Valley", "Simulation, Farming, Indie", "ConcernedApe", "ConcernedApe", 2016, 150.0f, "Tarla sür, balık tut, köylülerle arkadaş ol!", 413150, 97.3f, null));
-        allGames.add(new Game("Terraria", "Action, Adventure, Survival", "Re-Logic", "Re-Logic", 2011, 180.5f, "Kaz, inşa et, savaş – 2D sandbox evreninde.", 105600, 95.8f, null));
-        allGames.add(new Game("DOOM Eternal", "FPS, Action", "id Software", "Bethesda", 2020, 25.7f, "Cehennem ordularını yeryüzünden temizle!", 782330, 91.0f, null));
-        allGames.add(new Game("Fallout 4", "RPG, Open World", "Bethesda Game Studios", "Bethesda", 2015, 72.3f, "Nükleer savaş sonrası hayatta kalma ve keşif.", 377160, 88.2f, null));
-        allGames.add(new Game("The Elder Scrolls V: Skyrim", "RPG, Open World", "Bethesda Game Studios", "Bethesda", 2011, 220.4f, "Ejderhalarla dolu bir dünyada kaderini yaşa.", 72850, 96.7f, null));
-        allGames.add(new Game("Assassin's Creed Valhalla", "Action, RPG, Open World", "Ubisoft Montreal", "Ubisoft", 2020, 80.1f, "Bir Viking olarak İngiltere topraklarına sefer düzenle.", 0, 86.3f, null));
-        allGames.add(new Game("Far Cry 5", "FPS, Open World", "Ubisoft", "Ubisoft", 2018, 50.0f, "Kıyamet tarikatına karşı özgürlük mücadelesi.", 552520, 84.6f, null));
-        allGames.add(new Game("BioShock Infinite", "FPS, Story Rich", "Irrational Games", "2K", 2013, 20.2f, "Uçan bir şehirde sırlarla dolu bir kurtarma görevi.", 8870, 94.1f, null));
-        allGames.add(new Game("Death Stranding", "Adventure, Sci-Fi", "Kojima Productions", "505 Games", 2019, 61.0f, "Kıyamet sonrası Amerika’da bağ kurma yolculuğu.", 1190460, 89.9f, null));
-        allGames.add(new Game("It Takes Two", "Co-op, Adventure, Puzzle", "Hazelight", "EA Originals", 2021, 15.4f, "İki kişi, bir aşk hikayesi, bol bulmaca ve aksiyon.", 1426210, 93.6f, null));
-        allGames.add(new Game("A Plague Tale: Innocence", "Story Rich, Stealth", "Asobo Studio", "Focus Home Interactive", 2019, 18.3f, "Veba döneminde hayatta kalma ve kardeşlik hikayesi.", 752590, 88.4f, null));
-        allGames.add(new Game("Dishonored 2", "Stealth, Action", "Arkane Studios", "Bethesda", 2016, 34.0f, "İntikam, sihir ve gizlilik dolu bir dünya.", 403640, 91.5f, null));
-        allGames.add(new Game("Metro Exodus", "FPS, Story Rich", "4A Games", "Deep Silver", 2019, 29.8f, "Post-apokaliptik Rusya’da trenle yolculuk.", 412020, 88.7f, null));
-        allGames.add(new Game("The Forest", "Survival, Horror", "Endnight Games", "Endnight Games", 2018, 76.9f, "Bir uçak kazası sonrası canavarlarla dolu ormanda hayatta kal.", 242760, 92.1f, null));
-        allGames.add(new Game("Subnautica", "Survival, Underwater, Adventure", "Unknown Worlds", "Unknown Worlds", 2018, 53.5f, "Yabancı bir okyanus gezegeninde yaşam mücadelesi.", 264710, 94.4f, null));
-        allGames.add(new Game("Valheim", "Survival, Viking", "Iron Gate AB", "Coffee Stain", 2021, 60.2f, "Viking ölüleriyle dolu bir dünyada destanını yaz.", 892970, 90.7f, null));
-        allGames.add(new Game("Ghost of Tsushima", "Action, Open World, Samurai", "Sucker Punch", "Sony", 2020, 51.1f, "Moğol istilasına karşı onurlu bir direniş.", 0, 95.0f, null));
-        allGames.add(new Game("Control", "Action, Supernatural", "Remedy", "505 Games", 2019, 26.4f, "Doğaüstü güçlerle dolu gizemli bir federal binayı keşfet.", 870780, 90.0f, null));
         Collections.sort(allGames, Comparator.comparing(Game::getGameName));
         gameList = FXCollections.observableArrayList(allGames);
         ListView<Game> gameListView = new ListView<>(gameList);
@@ -232,7 +147,13 @@ public class HelloApplication extends Application {
         gameListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 InfoBox.getChildren().clear();
-                Image image = new Image(newValue.getCoverPath());
+                String coverPath = newValue.getCoverPath();
+                Image image;
+                if (coverPath == null || coverPath.isEmpty() || !(new File(coverPath).exists())) {
+                    image = new Image("file:src/main/Cover Arts/NemaFoto.jpg");
+                } else {
+                    image = new Image("file:" + coverPath);
+                }
                 gameImageView.setImage(image);
                 Label titleLabel = new Label(newValue.getGameName());
                 titleLabel.setTextFill(Color.WHITE);
