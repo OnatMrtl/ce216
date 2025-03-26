@@ -111,6 +111,7 @@ public class HelloApplication extends Application {
         gameListView.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(Game game, boolean empty) {
+
                 super.updateItem(game, empty);
                 if (empty || game == null) {
                     setText(null);
@@ -118,8 +119,20 @@ public class HelloApplication extends Application {
                 } else {
                     setText(game.getGameName());
                     setFont(Font.font("Arial", FontWeight.BOLD, 12));
-                    setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-control-inner-background: transparent;");
-                    setBorder(new Border(new BorderStroke(Color.web("#244658", 0.09), BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT)));
+                    Game selectedGame = gameListView.getSelectionModel().getSelectedItem();
+                    if (game.equals(selectedGame)) {
+                        // Seçili olan oyun: vurgulu stil
+                        setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+                        setBorder(new Border(new BorderStroke(
+                                Color.web("#244658"), BorderStrokeStyle.SOLID, new CornerRadii(5), new BorderWidths(2)
+                        )));
+                    } else {
+                        // Normal hücre
+                        setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+                        setBorder(new Border(new BorderStroke(
+                                Color.web("#244658", 0.09), BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT
+                        )));
+                    }
                 }
             }
         });
@@ -293,9 +306,8 @@ public class HelloApplication extends Application {
                 InfoBox.getChildren().addAll(gameImageView, detailBox);
             }
         });
-
-
-        filterButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5 ");
+        filterButton.setPromptText("≡");
+        filterButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;-fx-arrows-visible: false;-fx-prompt-text-fill: white; ");
         filterButton.setPrefSize(30,30);
         filterButton.setCellFactory(lv -> new ListCell<String>() {
             @Override
@@ -346,7 +358,16 @@ public class HelloApplication extends Application {
                 List<Game> favorites = allGames.stream()
                         .filter(Game::isFavGame)
                         .collect(Collectors.toList());
+                Game selectedGame = gameListView.getSelectionModel().getSelectedItem();
                 gameList.setAll(favorites);
+                if (gameList.contains(selectedGame)) {
+                    gameListView.getSelectionModel().select(selectedGame);
+                } else {
+                    gameListView.getSelectionModel().clearSelection();
+                    InfoBox.getChildren().clear();
+                }
+                gameListView.refresh();
+                gameList.sort(Comparator.comparing(Game::getGameName, String.CASE_INSENSITIVE_ORDER));
                 return;
             }
 
@@ -373,8 +394,37 @@ public class HelloApplication extends Application {
             } else if (selected.contains(messages.getString("steamID")) && selected.contains("\u2191")) {
                 sorted.sort(Comparator.comparing(Game::getSteamID));
             }
-
+            Game selectedGame = gameListView.getSelectionModel().getSelectedItem();
             gameList.setAll(sorted);
+            if(!gameList.contains(selectedGame)) {
+                gameListView.setCellFactory(param -> new ListCell<>() {
+                    @Override
+                    protected void updateItem(Game game, boolean empty) {
+
+                        super.updateItem(game, empty);
+                        if (empty || game == null) {
+                            setText(null);
+                            setStyle("-fx-control-inner-background: transparent;");
+                        } else {
+                            setText(game.getGameName());
+                            setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                            setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+                            setBorder(new Border(new BorderStroke(
+                                    Color.web("#244658", 0.09), BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT
+                            )));
+                        }
+                    }
+                });
+                gameListView.getSelectionModel().clearSelection();
+                InfoBox.getChildren().clear();
+                gameListView.refresh();
+            }else{
+                gameListView.getSelectionModel().clearSelection();
+                gameListView.getSelectionModel().select(selectedGame);
+                gameListView.refresh();
+            }
+            gameListView.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5 ");
+            gameListView.refresh();
         });
         HBox searchBox = new HBox(10,searchField,filterButton);
 
@@ -580,6 +630,7 @@ public class HelloApplication extends Application {
         hourText.setText(messages.getString("hour"));
         languageText.setText(messages.getString("language"));
 
+
         filterButton.getItems().clear();
         filterButton.getItems().addAll(
                 textToString(hoursPlayedText) + " \u2193",           // Oynanma süresi azalan
@@ -591,7 +642,8 @@ public class HelloApplication extends Application {
                 messages.getString("rating") + " \u2193",            // Puan azalan
                 messages.getString("rating") + " \u2191",            // Puan artan
                 messages.getString("steamID") + " \u2193",           // Steam ID azalan
-                messages.getString("steamID") + " \u2191"            // Steam ID artan
+                messages.getString("steamID") + " \u2191",            // Steam ID artan
+                messages.getString("favorite")
         );
     }
     private void saveGamesToJson(List<Game> games, String filePath) {
