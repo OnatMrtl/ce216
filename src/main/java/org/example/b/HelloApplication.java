@@ -155,7 +155,26 @@ public class HelloApplication extends Application {
                 95.3f,
                 "file:src/main/Cover Arts/Portal 2 Cover Art.jpg"
         ));
-
+        allGames.add(new Game("God of War", "Action, Adventure", "Santa Monica Studio", "Sony Interactive Entertainment", 2018, 42.5f, "Kratos oğluyla birlikte tanrılara karşı bir yolculuğa çıkıyor.", 0, 96.0f, null));
+        allGames.add(new Game("Cyberpunk 2077", "RPG, Open World, Sci-Fi", "CD Projekt Red", "CD Projekt", 2020, 65.2f, "V'nin distopik bir şehirde hayatta kalma mücadelesi.", 1091500, 89.5f, null));
+        allGames.add(new Game("Stardew Valley", "Simulation, Farming, Indie", "ConcernedApe", "ConcernedApe", 2016, 150.0f, "Tarla sür, balık tut, köylülerle arkadaş ol!", 413150, 97.3f, null));
+        allGames.add(new Game("Terraria", "Action, Adventure, Survival", "Re-Logic", "Re-Logic", 2011, 180.5f, "Kaz, inşa et, savaş – 2D sandbox evreninde.", 105600, 95.8f, null));
+        allGames.add(new Game("DOOM Eternal", "FPS, Action", "id Software", "Bethesda", 2020, 25.7f, "Cehennem ordularını yeryüzünden temizle!", 782330, 91.0f, null));
+        allGames.add(new Game("Fallout 4", "RPG, Open World", "Bethesda Game Studios", "Bethesda", 2015, 72.3f, "Nükleer savaş sonrası hayatta kalma ve keşif.", 377160, 88.2f, null));
+        allGames.add(new Game("The Elder Scrolls V: Skyrim", "RPG, Open World", "Bethesda Game Studios", "Bethesda", 2011, 220.4f, "Ejderhalarla dolu bir dünyada kaderini yaşa.", 72850, 96.7f, null));
+        allGames.add(new Game("Assassin's Creed Valhalla", "Action, RPG, Open World", "Ubisoft Montreal", "Ubisoft", 2020, 80.1f, "Bir Viking olarak İngiltere topraklarına sefer düzenle.", 0, 86.3f, null));
+        allGames.add(new Game("Far Cry 5", "FPS, Open World", "Ubisoft", "Ubisoft", 2018, 50.0f, "Kıyamet tarikatına karşı özgürlük mücadelesi.", 552520, 84.6f, null));
+        allGames.add(new Game("BioShock Infinite", "FPS, Story Rich", "Irrational Games", "2K", 2013, 20.2f, "Uçan bir şehirde sırlarla dolu bir kurtarma görevi.", 8870, 94.1f, null));
+        allGames.add(new Game("Death Stranding", "Adventure, Sci-Fi", "Kojima Productions", "505 Games", 2019, 61.0f, "Kıyamet sonrası Amerika’da bağ kurma yolculuğu.", 1190460, 89.9f, null));
+        allGames.add(new Game("It Takes Two", "Co-op, Adventure, Puzzle", "Hazelight", "EA Originals", 2021, 15.4f, "İki kişi, bir aşk hikayesi, bol bulmaca ve aksiyon.", 1426210, 93.6f, null));
+        allGames.add(new Game("A Plague Tale: Innocence", "Story Rich, Stealth", "Asobo Studio", "Focus Home Interactive", 2019, 18.3f, "Veba döneminde hayatta kalma ve kardeşlik hikayesi.", 752590, 88.4f, null));
+        allGames.add(new Game("Dishonored 2", "Stealth, Action", "Arkane Studios", "Bethesda", 2016, 34.0f, "İntikam, sihir ve gizlilik dolu bir dünya.", 403640, 91.5f, null));
+        allGames.add(new Game("Metro Exodus", "FPS, Story Rich", "4A Games", "Deep Silver", 2019, 29.8f, "Post-apokaliptik Rusya’da trenle yolculuk.", 412020, 88.7f, null));
+        allGames.add(new Game("The Forest", "Survival, Horror", "Endnight Games", "Endnight Games", 2018, 76.9f, "Bir uçak kazası sonrası canavarlarla dolu ormanda hayatta kal.", 242760, 92.1f, null));
+        allGames.add(new Game("Subnautica", "Survival, Underwater, Adventure", "Unknown Worlds", "Unknown Worlds", 2018, 53.5f, "Yabancı bir okyanus gezegeninde yaşam mücadelesi.", 264710, 94.4f, null));
+        allGames.add(new Game("Valheim", "Survival, Viking", "Iron Gate AB", "Coffee Stain", 2021, 60.2f, "Viking ölüleriyle dolu bir dünyada destanını yaz.", 892970, 90.7f, null));
+        allGames.add(new Game("Ghost of Tsushima", "Action, Open World, Samurai", "Sucker Punch", "Sony", 2020, 51.1f, "Moğol istilasına karşı onurlu bir direniş.", 0, 95.0f, null));
+        allGames.add(new Game("Control", "Action, Supernatural", "Remedy", "505 Games", 2019, 26.4f, "Doğaüstü güçlerle dolu gizemli bir federal binayı keşfet.", 870780, 90.0f, null));
         Collections.sort(allGames, Comparator.comparing(Game::getGameName));
         gameList = FXCollections.observableArrayList(allGames);
         ListView<Game> gameListView = new ListView<>(gameList);
