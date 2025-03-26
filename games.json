@@ -1,0 +1,41 @@
+[
+  {
+    "gameName": "Stardew Valley",
+    "gameGenre": "Simulation",
+    "developerName": "ConcernedApe",
+    "publisherName": "ConcernedApe",
+    "releaseYear": 2016,
+    "hoursPlayed": 85.0,
+    "gameInfo": "A farming simulation game with RPG elements in a charming rural setting.",
+    "SteamID": 0,
+    "publicRating": 89.0,
+    "coverPath": "file:src/main/Cover Arts/StardewValley.jpeg",
+    "favGame": false
+  },
+  {
+    "gameName": "Hades",
+    "gameGenre": "Roguelike",
+    "developerName": "Supergiant Games",
+    "publisherName": "Supergiant Games",
+    "releaseYear": 2020,
+    "hoursPlayed": 67.0,
+    "gameInfo": "Battle your way out of the Underworld in this action-packed roguelike.",
+    "SteamID": 0,
+    "publicRating": 93.0,
+    "coverPath": "file:src/main/Cover Arts/Hades.jpeg",
+    "favGame": false
+  },
+  {
+    "gameName": "The Witness",
+    "gameGenre": "Puzzle",
+    "developerName": "Thekla, Inc.",
+    "publisherName": "Thekla, Inc.",
+    "releaseYear": 2016,
+    "hoursPlayed": 30.0,
+    "gameInfo": "Explore a mysterious island filled with challenging puzzles and secrets.",
+    "SteamID": 0,
+    "publicRating": 87.0,
+    "coverPath": "file:src/main/Cover Arts/TheWitness.jpeg",
+    "favGame": false
+  }
+]
