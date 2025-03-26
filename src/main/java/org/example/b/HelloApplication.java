@@ -1,4 +1,9 @@
 package org.example.b;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.*;
+import java.util.Arrays;
+import javafx.stage.FileChooser;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -79,7 +84,13 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) {
-        allGames = new ArrayList<>();
+        String savePath = "games.json";
+        allGames = readGamesFromJson(savePath);
+        if (allGames.isEmpty()) {
+            allGames = new ArrayList<>();
+            // Varsayılan oyunlar burada eklenebilir
+            saveGamesToJson(allGames, savePath);
+        }
         allGames.add(new Game("Batman Arkham Knight", "Action-Adventure, Open World, Superhero", "Rocksteady Studios", "Warner Bros. Interactive Entertainment", 2015, 20, "Batman oluyon milleti dövüyon", 208650, 94.4f, "file:src/main/Cover Arts/Batman Arkham Knight Cover Art.jpg"));
         allGames.add(new Game("Bloodborne", "Action Role-Playing", "FromSoftware", "Sony Computer Entertainment", 2015, 44, "Kılıcı alıyon bakıyon karşında canavar kesecem diyon ölüyon yirmi yıl geri gidiyon", 0, 89.5f, null));
         allGames.add(new Game("Dark Souls II: Scholar of the First Sin", "Action Role-Playing", "FromSoftware, QLOC", "Bandai Namco Entertainment", 2017, 100, "Kılıcı alıp ölüyon deliriyon", 0, 89.5f, "file:src/main/Cover Arts/Dark Souls II Scholar of th First Sin Cover Art.jpg"));
@@ -478,6 +489,25 @@ public class HelloApplication extends Application {
         addButton.setBorder(buttonBorder);
         addButton.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-prompt-text-fill: white;");
 
+        addButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("JSON Dosyası Seç");
+            fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("JSON Dosyaları", "*.json")
+            );
+            File selectedFile = fileChooser.showOpenDialog(stage);
+            if (selectedFile != null) {
+                List<Game> importedGames = readGamesFromJson(selectedFile.getAbsolutePath());
+                for (Game g : importedGames) {
+                    if (!allGames.contains(g)) {
+                        allGames.add(g);
+                    }
+                }
+                gameList.setAll(allGames);
+                saveGamesToJson(allGames, "games.json");
+            }
+        });
+
         BorderPane menuPane = new BorderPane();
 
         HBox leftMenu = new HBox(5, addButton, clockLabel);
@@ -631,5 +661,24 @@ public class HelloApplication extends Application {
                 messages.getString("steamID") + " \u2193",           // Steam ID azalan
                 messages.getString("steamID") + " \u2191"            // Steam ID artan
         );
+    }
+    private void saveGamesToJson(List<Game> games, String filePath) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (FileWriter writer = new FileWriter(filePath)) {
+            gson.toJson(games, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<Game> readGamesFromJson(String filePath) {
+        Gson gson = new Gson();
+        try (FileReader reader = new FileReader(filePath)) {
+            Game[] games = gson.fromJson(reader, Game[].class);
+            return games != null ? new ArrayList<>(Arrays.asList(games)) : new ArrayList<>();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }
