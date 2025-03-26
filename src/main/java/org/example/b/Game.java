@@ -11,6 +11,7 @@ public class Game {
     private int SteamID;
     private float publicRating;
     private String coverPath;
+    private boolean favGame;
 
     public Game(String gameName,String gameGenre, String developerName, String publisherName, int releaseYear, float hoursPlayed, String gameInfo, int SteamID, float publicRating, String coverPath) {
         this.gameInfo = gameInfo;
@@ -42,4 +43,5 @@ public class Game {
     public String getYearString(){
         return String.valueOf(getReleaseYear());
     }
+    public boolean isFavGame() { return favGame; }
 }

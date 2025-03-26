@@ -24,6 +24,7 @@ import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import javax.swing.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 public class HelloApplication extends Application {
     private ObservableList<Game> gameList; // Dinamik liste
     private List<Game> allGames; // Tüm oyunların saklandığı liste
-    private static Locale currentLocale = new Locale("tr"); // Varsayılan Türkçe
+    private static Locale currentLocale = new Locale("en"); // Varsayılan Türkçe
     protected Button settingsButton = new Button();
     protected TextField searchField = new TextField();
     protected Button addButton = new Button("+");
@@ -46,12 +47,20 @@ public class HelloApplication extends Application {
     protected Text infoText = new Text(messages.getString("info"));
     protected Text hourText = new Text(messages.getString("hour"));
     protected Text languageText = new Text(messages.getString("language"));
+    protected ComboBox<String> filterButton =new ComboBox<>();
 
     private static ResourceBundle messages = ResourceBundle.getBundle("lang", currentLocale);
 
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public static String textToString(Text textNode) {
+        if (textNode == null) {
+            return "";
+        }
+        return textNode.getText();
     }
 
     // Oyun listesini filtreleme fonksiyonu
@@ -82,6 +91,70 @@ public class HelloApplication extends Application {
         allGames.add(new Game("Minecraft", "Sandbox, Survival", "Mojang Studios", "Mojang Studios", 2011, 1002.2f, "Küpürürsün BLOK BLOK BLOK", 0, 98.7f, "file:src/main/Cover Arts/Minecraft Cover Art.jpg"));
         allGames.add(new Game("Resident Evil 4", "Survival Horror, Third-Person Shooter", "Capcom Production Studio 4", "Capcom", 2005, 28.1f, "Zombi var ateş ediyon", 254700, 89.6f, "file:src/main/Cover Arts/Resident Evil 4 Cover Art.jpeg"));
         allGames.add(new Game("Sekiro: Shadows Die Twice", "Action Role-Playing", "FromSoftware", "Activision", 2019, 1001, "Git GUD", 814380, 93.4f, null));
+        allGames.add(new Game(
+                "The Witcher 3: Wild Hunt",
+                "Action RPG, Open World, Fantasy",
+                "CD Projekt Red",
+                "CD Projekt",
+                2015,
+                85.3f,
+                "Büyülerle ve kılıçla canavar avladığın epik bir hikaye; politik entrikalar, seçimler ve bol bol Gwent kart oyunu.",
+                292030,
+                97.6f,
+                "file:src/main/Cover Arts/The Witcher 3 Cover Art.jpg"
+        ));
+
+        allGames.add(new Game(
+                "Hollow Knight",
+                "Metroidvania, Indie, Platformer",
+                "Team Cherry",
+                "Team Cherry",
+                2017,
+                34.7f,
+                "Sessiz bir kahramanla yeraltı krallığında kaybolmuş ruhlar ve karanlık sırlarla dolu bir yolculuğa çık.",
+                367520,
+                94.2f,
+                "file:src/main/Cover Arts/Hollow Knight Cover Art.jpg"
+        ));
+
+        allGames.add(new Game(
+                "Red Dead Redemption 2",
+                "Open World, Western, Action-Adventure",
+                "Rockstar Studios",
+                "Rockstar Games",
+                2018,
+                112.9f,
+                "Bir kanun kaçağının gözünden, Amerika'nın değişen yüzüyle birlikte çürüyen bir çetenin hikayesi.",
+                1174180,
+                96.5f,
+                "file:src/main/Cover Arts/Red Dead Redemption 2 Cover Art.jpg"
+        ));
+
+        allGames.add(new Game(
+                "Celeste",
+                "Platformer, Indie, Pixel Art",
+                "Matt Makes Games",
+                "Matt Makes Games",
+                2018,
+                12.6f,
+                "Kendi içsel dağını tırmanmaya çalışan bir karakterin duygusal ve zorlu yolculuğu.",
+                504230,
+                93.7f,
+                "file:src/main/Cover Arts/Celeste Cover Art.jpg"
+        ));
+
+        allGames.add(new Game(
+                "Portal 2",
+                "Puzzle, First-Person, Sci-Fi",
+                "Valve",
+                "Valve",
+                2011,
+                9.8f,
+                "Zekice hazırlanmış bulmacalar ve efsanevi yapay zeka GLaDOS ile mizah dolu bir deneyim.",
+                620,
+                95.3f,
+                "file:src/main/Cover Arts/Portal 2 Cover Art.jpg"
+        ));
 
         Collections.sort(allGames, Comparator.comparing(Game::getGameName));
         gameList = FXCollections.observableArrayList(allGames);
@@ -266,30 +339,90 @@ public class HelloApplication extends Application {
                 InfoBox.getChildren().addAll(gameImageView, detailBox);
             }
         });
-        Button filterButton =new Button();
+
+
         filterButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5 ");
         filterButton.setPrefSize(30,30);
+        filterButton.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("-fx-background-color: #244658; -fx-text-fill: white;-fx-control-inner-background: transparent;-fx-border-radius: 5;-fx-border-color: white;-fx-border-width: 0.1;-fx-background-radius: 5;-fx-background-insets: 0;");
+                } else {
+                    setText(item);
+                    setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    setStyle("-fx-background-color: #244658; -fx-text-fill: white;-fx-control-inner-background: transparent;-fx-border-radius: 5;-fx-border-color: white;-fx-border-width: 0.1;-fx-background-radius: 5;-fx-background-insets: 0;");
+                }
+            }
+        });
+
+        filterButton.setButtonCell(new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-control-inner-background: transparent;");
+                } else {
+                    setText(item);
+                    setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-control-inner-background: transparent;-fx-border-radius: 5;");
+                }
+            }
+        });
+        filterButton.getItems().addAll(
+                textToString(hoursPlayedText) + " \u2193",           // Oynanma süresi azalan
+                textToString(hoursPlayedText) + " \u2191",           // Oynanma süresi artan
+                messages.getString("gameName") + " A-Z",             // Oyun ismi A'dan Z'ye
+                messages.getString("gameName") + " Z-A",             // Oyun ismi Z'den A'ya
+                messages.getString("releaseDate") + " \u2191",       // Çıkış yılı artan
+                messages.getString("releaseDate") + " \u2193",       // Çıkış yılı azalan
+                messages.getString("rating") + " \u2193",            // Puan azalan
+                messages.getString("rating") + " \u2191",            // Puan artan
+                messages.getString("steamID") + " \u2193",           // Steam ID azalan
+                messages.getString("steamID") + " \u2191"            // Steam ID artan
+        );
+        filterButton.setOnAction(event -> {
+            String selected = filterButton.getValue();
+            if (selected == null) return;
+
+            List<Game> sorted = new ArrayList<>(gameList);
+
+            if (selected.contains(hoursPlayedText.getText()) && selected.contains("\u2193")) {
+                sorted.sort(Comparator.comparing(Game::getHoursPlayed).reversed());
+            } else if (selected.contains(hoursPlayedText.getText()) && selected.contains("\u2191")) {
+                sorted.sort(Comparator.comparing(Game::getHoursPlayed));
+            } else if (selected.contains(messages.getString("gameName")) && selected.contains("A-Z")) {
+                sorted.sort(Comparator.comparing(Game::getGameName, String.CASE_INSENSITIVE_ORDER));
+            } else if (selected.contains(messages.getString("gameName")) && selected.contains("Z-A")) {
+                sorted.sort(Comparator.comparing(Game::getGameName, String.CASE_INSENSITIVE_ORDER).reversed());
+            } else if (selected.contains(messages.getString("releaseDate")) && selected.contains("\u2191")) {
+                sorted.sort(Comparator.comparing(Game::getReleaseYear));
+            } else if (selected.contains(messages.getString("releaseDate")) && selected.contains("\u2193")) {
+                sorted.sort(Comparator.comparing(Game::getReleaseYear).reversed());
+            } else if (selected.contains(messages.getString("rating")) && selected.contains("\u2193")) {
+                sorted.sort(Comparator.comparing(Game::getPublicRating).reversed());
+            } else if (selected.contains(messages.getString("rating")) && selected.contains("\u2191")) {
+                sorted.sort(Comparator.comparing(Game::getPublicRating));
+            } else if (selected.contains(messages.getString("steamID")) && selected.contains("\u2193")) {
+                sorted.sort(Comparator.comparing(Game::getSteamID).reversed());
+            } else if (selected.contains(messages.getString("steamID")) && selected.contains("\u2191")) {
+                sorted.sort(Comparator.comparing(Game::getSteamID));
+            }
+
+            gameList.setAll(sorted);
+        });
         HBox searchBox = new HBox(10,searchField,filterButton);
 
-        Button sortByNameBtn = new Button("Name");
-        Button sortByHoursBtn = new Button("Hours");
-        Button sortByRatingBtn = new Button("Rating");
-        Button sortByYearBtn = new Button("Year");
 
-        sortByNameBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;");
-        sortByHoursBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;");
-        sortByRatingBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;");
-        sortByYearBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;");
 
         HBox.setHgrow(gameListView, Priority.ALWAYS);
         VBox.setVgrow(detailBox, Priority.ALWAYS);
         VBox.setVgrow(gameImageView, Priority.ALWAYS);
 
-        HBox sortBox = new HBox(10, sortByNameBtn, sortByHoursBtn, sortByRatingBtn, sortByYearBtn);
-        sortBox.setAlignment(Pos.CENTER_LEFT);
-        sortBox.setPadding(new Insets(10, 0, 0, 0));
-
-        VBox leftBox = new VBox(10, searchBox, sortBox, gameListView);
+        VBox leftBox = new VBox(10, searchBox, gameListView);
 
         HBox appIn = new HBox(20, leftBox, InfoBox);
         appIn.prefWidthProperty().bind(stage.widthProperty());
@@ -361,8 +494,8 @@ public class HelloApplication extends Application {
         ComboBox<String> languageSelector = new ComboBox<>();
         HBox langHBox = new HBox(5,languageText,new Text(" "),languageSelector);
 
-        languageSelector.getItems().addAll("Türkçe", "English");
-        languageSelector.setValue("Türkçe");
+        languageSelector.getItems().addAll("Türkçe", "English", "繁體中文");
+        languageSelector.setValue("English");
         languageSelector.setStyle("-fx-background-color: transparent; -fx-progress-color: transparent;-fx-text-fill: white;-fx-border-color: #244658;-fx-border-radius: 5;");
 
         settingsVBox.getChildren().addAll(langHBox);
@@ -376,8 +509,11 @@ public class HelloApplication extends Application {
             String selectedLang = languageSelector.getValue();
             if (selectedLang.equals("English")) {
                 currentLocale = new Locale("en");
-            } else {
+            } else if (selectedLang.equals("Türkçe")){
                 currentLocale = new Locale("tr");
+            }
+            else if (selectedLang.equals("繁體中文")) {
+                currentLocale = Locale.TRADITIONAL_CHINESE;
             }
             messages = ResourceBundle.getBundle("lang", currentLocale);
             updateLanguage();
@@ -391,6 +527,7 @@ public class HelloApplication extends Application {
                     setText(null);
                 } else {
                     setText(item);
+                    setFont(Font.font("Arial", FontWeight.BOLD, 12));
                     setStyle("-fx-background-color: #244658; -fx-text-fill: white;-fx-control-inner-background: transparent;-fx-border-radius: 5;-fx-border-color: white;-fx-border-width: 0.1;-fx-background-radius: 5;-fx-background-insets: 0;");
                 }
             }
@@ -426,7 +563,7 @@ public class HelloApplication extends Application {
             settingsButton.setBorder(buttonBorderBold);
         });
 
-        
+
         Image backgroundImage = new Image("file:src/main/Cover Arts/Steam Background.jpeg");
         BackgroundImage background = new BackgroundImage(
                 backgroundImage,
@@ -438,18 +575,19 @@ public class HelloApplication extends Application {
         root.setBackground(new Background(background));
 
         Scene windowedScene = new Scene(root);
+        windowedScene.getStylesheets().add(getClass().getResource("/scrollBarStyle.css").toExternalForm());
         stage.setTitle("STEAM2.0 v31.12.23");
         stage.setScene(windowedScene);
         stage.setMinWidth(800);
         stage.setMinHeight(500);
         windowedScene.setFill(Color.DARKBLUE);
         stage.show();
+
     }
 
     private void updateLanguage() {
         libButton.setText(messages.getString("library"));
         settingsButton.setText(messages.getString("settings"));
-        addButton.setText(messages.getString("add"));
         searchField.setPromptText(messages.getString("search"));
         genreText.setText(messages.getString("genre"));
         developerText.setText(messages.getString("developer"));
@@ -460,5 +598,19 @@ public class HelloApplication extends Application {
         infoText.setText(messages.getString("info"));
         hourText.setText(messages.getString("hour"));
         languageText.setText(messages.getString("language"));
+
+        filterButton.getItems().clear();
+        filterButton.getItems().addAll(
+                textToString(hoursPlayedText) + " \u2193",           // Oynanma süresi azalan
+                textToString(hoursPlayedText) + " \u2191",           // Oynanma süresi artan
+                messages.getString("gameName") + " A-Z",             // Oyun ismi A'dan Z'ye
+                messages.getString("gameName") + " Z-A",             // Oyun ismi Z'den A'ya
+                messages.getString("releaseDate") + " \u2191",       // Çıkış yılı artan
+                messages.getString("releaseDate") + " \u2193",       // Çıkış yılı azalan
+                messages.getString("rating") + " \u2193",            // Puan azalan
+                messages.getString("rating") + " \u2191",            // Puan artan
+                messages.getString("steamID") + " \u2193",           // Steam ID azalan
+                messages.getString("steamID") + " \u2191"            // Steam ID artan
+        );
     }
 }
