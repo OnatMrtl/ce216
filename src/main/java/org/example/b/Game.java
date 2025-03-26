@@ -44,4 +44,5 @@ public class Game {
         return String.valueOf(getReleaseYear());
     }
     public boolean isFavGame() { return favGame; }
+    public void setFavorite(boolean favGame) { this.favGame = favGame; }
 }

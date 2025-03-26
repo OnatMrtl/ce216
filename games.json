@@ -36,7 +36,7 @@
     "SteamID": 0,
     "publicRating": 87.0,
     "coverPath": "file:src/main/Cover Arts/TheWitness.jpeg",
-    "favGame": false
+    "favGame": true
   },
   {
     "gameName": "Minecraft",
@@ -62,6 +62,6 @@
     "SteamID": 0,
     "publicRating": 94.0,
     "coverPath": "file:src/main/Cover Arts/Elden Ring Cover Art.jpg",
-    "favGame": false
+    "favGame": true
   }
 ]
