@@ -336,13 +336,21 @@ public class HelloApplication extends Application {
                 messages.getString("rating") + " \u2193",            // Puan azalan
                 messages.getString("rating") + " \u2191",            // Puan artan
                 messages.getString("steamID") + " \u2193",           // Steam ID azalan
-                messages.getString("steamID") + " \u2191"            // Steam ID artan
+                messages.getString("steamID") + " \u2191",           // Steam ID artan
+                messages.getString("favorite") // Favoriler için ayrı filtre
         );
         filterButton.setOnAction(event -> {
             String selected = filterButton.getValue();
             if (selected == null) return;
+            if (selected.equals(messages.getString("favorite"))) {
+                List<Game> favorites = allGames.stream()
+                        .filter(Game::isFavGame)
+                        .collect(Collectors.toList());
+                gameList.setAll(favorites);
+                return;
+            }
 
-            List<Game> sorted = new ArrayList<>(gameList);
+            List<Game> sorted = new ArrayList<>(allGames);
 
             if (selected.contains(hoursPlayedText.getText()) && selected.contains("\u2193")) {
                 sorted.sort(Comparator.comparing(Game::getHoursPlayed).reversed());
