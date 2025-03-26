@@ -1,18 +1,5 @@
 [
   {
-    "gameName": "Stardew Valley",
-    "gameGenre": "Simulation",
-    "developerName": "ConcernedApe",
-    "publisherName": "ConcernedApe",
-    "releaseYear": 2016,
-    "hoursPlayed": 85.0,
-    "gameInfo": "A farming simulation game with RPG elements in a charming rural setting.",
-    "SteamID": 0,
-    "publicRating": 89.0,
-    "coverPath": "file:src/main/Cover Arts/StardewValley.jpeg",
-    "favGame": false
-  },
-  {
     "gameName": "Hades",
     "gameGenre": "Roguelike",
     "developerName": "Supergiant Games",
@@ -26,6 +13,19 @@
     "favGame": false
   },
   {
+    "gameName": "Stardew Valley",
+    "gameGenre": "Simulation",
+    "developerName": "ConcernedApe",
+    "publisherName": "ConcernedApe",
+    "releaseYear": 2016,
+    "hoursPlayed": 85.0,
+    "gameInfo": "A farming simulation game with RPG elements in a charming rural setting.",
+    "SteamID": 0,
+    "publicRating": 89.0,
+    "coverPath": "file:src/main/Cover Arts/StardewValley.jpeg",
+    "favGame": false
+  },
+  {
     "gameName": "The Witness",
     "gameGenre": "Puzzle",
     "developerName": "Thekla, Inc.",
@@ -36,6 +36,32 @@
     "SteamID": 0,
     "publicRating": 87.0,
     "coverPath": "file:src/main/Cover Arts/TheWitness.jpeg",
+    "favGame": false
+  },
+  {
+    "gameName": "Minecraft",
+    "gameGenre": "Sandbox",
+    "developerName": "Mojang Studios",
+    "publisherName": "Mojang Studios",
+    "releaseYear": 2011,
+    "hoursPlayed": 300.0,
+    "gameInfo": "A blocky sandbox world where you can build, explore, and survive.",
+    "SteamID": 0,
+    "publicRating": 93.0,
+    "coverPath": "file:src/main/Cover Arts/Minecraft Cover Art.jpg",
+    "favGame": false
+  },
+  {
+    "gameName": "Elden Ring",
+    "gameGenre": "Action RPG",
+    "developerName": "FromSoftware",
+    "publisherName": "Bandai Namco",
+    "releaseYear": 2022,
+    "hoursPlayed": 150.0,
+    "gameInfo": "Explore the vast world of the Lands Between in this challenging action RPG.",
+    "SteamID": 0,
+    "publicRating": 94.0,
+    "coverPath": "file:src/main/Cover Arts/Elden Ring Cover Art.jpg",
     "favGame": false
   }
 ]

@@ -149,10 +149,13 @@ public class HelloApplication extends Application {
                 InfoBox.getChildren().clear();
                 String coverPath = newValue.getCoverPath();
                 Image image;
-                if (coverPath == null || coverPath.isEmpty() || !(new File(coverPath).exists())) {
+                try {
+                    image = new Image(coverPath, false);
+                    if (image.isError()) {
+                        image = new Image("file:src/main/Cover Arts/NemaFoto.jpg");
+                    }
+                } catch (Exception e) {
                     image = new Image("file:src/main/Cover Arts/NemaFoto.jpg");
-                } else {
-                    image = new Image("file:" + coverPath);
                 }
                 gameImageView.setImage(image);
                 Label titleLabel = new Label(newValue.getGameName());
