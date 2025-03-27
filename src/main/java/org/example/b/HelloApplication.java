@@ -52,6 +52,7 @@ public class HelloApplication extends Application {
     protected Text infoText = new Text(messages.getString("info"));
     protected Text hourText = new Text(messages.getString("hour"));
     protected Text languageText = new Text(messages.getString("language"));
+    protected Text favoriteText = new Text(messages.getString("favorite"));
     protected ComboBox<String> filterButton =new ComboBox<>();
 
     private static ResourceBundle messages = ResourceBundle.getBundle("lang", currentLocale);
@@ -111,24 +112,22 @@ public class HelloApplication extends Application {
         gameListView.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(Game game, boolean empty) {
-
                 super.updateItem(game, empty);
                 if (empty || game == null) {
                     setText(null);
                     setStyle("-fx-control-inner-background: transparent;");
+                    setBorder(null); // Boş hücrede border tamamen kaldırılıyor
                 } else {
                     setText(game.getGameName());
                     setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+
                     Game selectedGame = gameListView.getSelectionModel().getSelectedItem();
-                    if (game.equals(selectedGame)) {
-                        // Seçili olan oyun: vurgulu stil
-                        setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+                    if (selectedGame != null && game.equals(selectedGame)) {
                         setBorder(new Border(new BorderStroke(
                                 Color.web("#244658"), BorderStrokeStyle.SOLID, new CornerRadii(5), new BorderWidths(2)
                         )));
                     } else {
-                        // Normal hücre
-                        setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
                         setBorder(new Border(new BorderStroke(
                                 Color.web("#244658", 0.09), BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT
                         )));
@@ -300,10 +299,39 @@ public class HelloApplication extends Application {
                             setFill(Color.WHITE);
                         }}
                 );
+                ToggleButton favButton = new ToggleButton("★");
+                favButton.setText(newValue.isFavGame() ? "★" : "☆");
+                favButton.setStyle("-fx-background-color: transparent;-fx-border-color: #244658;-fx-border-width: 2px;-fx-text-fill: white;-fx-prompt-text-fill: white;-fx-border-radius: 5");
+                favButton.setOnAction(e -> {
+                    boolean newState = !newValue.isFavGame();
+                    newValue.setFavGame(newState);
+                    favButton.setText(newState ? "★" : "☆");
+                    saveGamesToJson(allGames, "games.json");
 
+                    String selected = filterButton.getValue();
+
+                    if (selected != null && selected.equals(messages.getString("favorite"))) {
+                        List<Game> favorites = allGames.stream()
+                                .filter(Game::isFavGame)
+                                .collect(Collectors.toList());
+                        gameList.setAll(favorites);
+                    } else {
+                        Collections.sort(allGames, Comparator.comparing(Game::getGameName, String.CASE_INSENSITIVE_ORDER));
+                        gameList.setAll(allGames);
+                    }
+
+                    gameListView.refresh();
+                    gameListView.getSelectionModel().select(newValue);
+                });
+                Label favLabel = new Label(messages.getString("favorite")+" : ");
+                favLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                favLabel.setStyle("-fx-prompt-text-fill: white;-fx-text-fill: white");
+                HBox favHBox = new HBox(10,favLabel,favButton);
+                favHBox.setAlignment(Pos.CENTER);
+                VBox imageBox = new VBox(10,gameImageView,favHBox);
                 detailBox.getChildren().setAll(titleLabel, genreFlow, hoursPlayedFlow, developerFlow, publisherFlow,
                         yearFlow, ratingFlow, descriptionFlow, steamIDFlow);
-                InfoBox.getChildren().addAll(gameImageView, detailBox);
+                InfoBox.getChildren().addAll(imageBox, detailBox);
             }
         });
         filterButton.setPromptText("≡");
@@ -629,6 +657,7 @@ public class HelloApplication extends Application {
         infoText.setText(messages.getString("info"));
         hourText.setText(messages.getString("hour"));
         languageText.setText(messages.getString("language"));
+        favoriteText.setText(messages.getString("favorite"));
 
 
         filterButton.getItems().clear();
