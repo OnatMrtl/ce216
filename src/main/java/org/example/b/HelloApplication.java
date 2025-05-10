@@ -629,7 +629,43 @@ public class HelloApplication extends Application {
             }
         });
 
-        VBox root = new VBox(menuPane, separator, appIn);
+        // HELP MENU BURADA
+        MenuBar menuBar = new MenuBar();
+        Menu helpMenu = new Menu("Help");
+        MenuItem userManual = new MenuItem("User Manual");
+
+        userManual.setOnAction(event -> {
+            Alert manualAlert = new Alert(Alert.AlertType.INFORMATION);
+            manualAlert.setTitle("User Manual");
+            manualAlert.setHeaderText("Game Catalog Application Help");
+
+            String manualText = """
+    - To add games via JSON or XML, click the + button in the top-right corner.
+    - Click on a game in the list to view its details.
+    - Use the search bar to find games by name, developer, year, etc.
+    - Use the filter dropdown to sort or view only favorites.
+    - Click the star icon in the details to add/remove from favorites.
+    - You can switch languages in the Settings tab.
+    - Game cover images are shown automatically; a default image is used if missing.
+    """;
+
+            TextArea manualArea = new TextArea(manualText);
+            manualArea.setEditable(false);
+            manualArea.setWrapText(true);
+            manualArea.setPrefSize(500, 300);
+
+            DialogPane dialogPane = manualAlert.getDialogPane();
+            dialogPane.setContent(manualArea);
+
+            manualAlert.showAndWait();
+        });
+
+        helpMenu.getItems().add(userManual);
+        menuBar.getMenus().add(helpMenu);
+
+
+        VBox root = new VBox(menuBar, menuPane, separator, appIn);
+
 
         libButton.setOnAction(e -> {
             root.getChildren().clear();
