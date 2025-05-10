@@ -500,23 +500,46 @@ public class HelloApplication extends Application {
         addButton.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-prompt-text-fill: white;");
 
         addButton.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("JSON Dosyası Seç");
-            fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("JSON Dosyaları", "*.json")
-            );
-            File selectedFile = fileChooser.showOpenDialog(stage);
-            if (selectedFile != null) {
-                List<Game> importedGames = readGamesFromJson(selectedFile.getAbsolutePath());
-                for (Game g : importedGames) {
-                    if (!allGames.contains(g)) {
-                        allGames.add(g);
+            List<String> options = Arrays.asList("Add JSON File", "Add XML File");
+
+            ChoiceDialog<String> dialog = new ChoiceDialog<>(options.get(0), options);
+            dialog.setTitle("File Type Selection");
+            dialog.setHeaderText("Please select the type of file you would like to attach");
+            dialog.setContentText("File type:");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(choice -> {
+                FileChooser fileChooser = new FileChooser();
+
+                if (choice.equals("JSON File Added")) {
+                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+                    fileChooser.setTitle("select JSON file");
+                    File selectedFile = fileChooser.showOpenDialog(stage);
+                    if (selectedFile != null) {
+                        List<Game> importedGames = readGamesFromJson(selectedFile.getAbsolutePath());
+                        for (Game g : importedGames) {
+                            if (!allGames.contains(g)) {
+                                allGames.add(g);
+                            }
+                        }
+                        gameList.setAll(allGames);
+                        saveGamesToJson(allGames, "games.json");
+                    }
+
+                } else if (choice.equals("Add XML File")) {
+                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));
+                    fileChooser.setTitle("Select XML File");
+                    File selectedFile = fileChooser.showOpenDialog(stage);
+                    if (selectedFile != null) {
+                        // Buraya XML dosyasını okuma ve işleme kodu eklenecek
+
+                        System.out.println("Selected XML file: " + selectedFile.getAbsolutePath());
+                        // XML içeriğini oku ve uygun şekilde işle
                     }
                 }
-                gameList.setAll(allGames);
-                saveGamesToJson(allGames, "games.json");
-            }
+            });
         });
+
 
         BorderPane menuPane = new BorderPane();
 
