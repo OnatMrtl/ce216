@@ -59,8 +59,8 @@ public class HelloApplication extends Application {
     private static Locale currentLocale = new Locale("en"); // Varsayılan İngilizce
     protected Button settingsButton = new Button();
     protected TextField searchField = new TextField();
-    protected Button importButton = new Button("Import");
-    protected Button exportButton = new Button("Export");
+    protected Button importButton = new Button(messages.getString("import"));
+    protected Button exportButton = new Button(messages.getString("export"));
     protected Button helpButton = new Button("Help");
     protected Button libButton = new Button();
     protected Button editButton = new Button();
@@ -939,6 +939,8 @@ public class HelloApplication extends Application {
         favoriteText.setText(messages.getString("favorite"));
         editButton.setText(messages.getString("edit"));
         helpButton.setText(messages.getString("help"));
+        importButton.setText(messages.getString("import"));
+        exportButton.setText(messages.getString("export"));
 
         filterButton.getItems().clear();
         filterButton.getItems().addAll(
