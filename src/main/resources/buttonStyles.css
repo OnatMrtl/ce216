@@ -18,3 +18,20 @@
 .button:pressed {
     -fx-background-color: transparent;
 }
+
+.export-checkbox > .box {
+    -fx-background-color: transparent;
+    -fx-border-color: #244658;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+    -fx-padding: 2px;
+}
+
+.export-checkbox:selected > .box {
+    -fx-background-color: #244658;
+    -fx-border-color:white;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+    -fx-padding: 2px;
+    -fx-mark-color: white;
+}

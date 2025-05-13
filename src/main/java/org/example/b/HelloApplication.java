@@ -1,4 +1,5 @@
 package org.example.b;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Alert;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,6 +12,8 @@ import javafx.stage.Modality;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.HPos;
 import javafx.scene.control.Dialog;
@@ -52,6 +55,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.CheckBox;
 
 public class HelloApplication extends Application {
     private ListView<Game> gameListView;
@@ -710,24 +717,135 @@ public class HelloApplication extends Application {
         exportButton.getStyleClass().add("button");
         exportButton.getStyleClass().add("export-button");
         exportButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        exportButton.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle(messages.getString("export"));
-            fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("JSON Files", "*.json")
-            );
-            File file = fileChooser.showSaveDialog(stage);
-            if (file != null) {
-                saveGamesToJson(allGames, file.getAbsolutePath());
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(messages.getString("export"));
-                alert.setHeaderText(null);
-                alert.setContentText(messages.getString("exportSuccess") + "\n" + file.getAbsolutePath());
-                alert.initOwner(stage);
-                alert.showAndWait();
-            }
-        });
+            exportButton.setOnAction(e -> {
+                Dialog<ButtonType> dialog = new Dialog<>();
+                dialog.setTitle(messages.getString("export"));
+                dialog.initOwner(stage);
+                dialog.initModality(Modality.APPLICATION_MODAL);
 
+                // Background image for dialog pane and list view
+                BackgroundImage scrollImage = new BackgroundImage(
+                    backgroundImage,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.CENTER,
+                    new BackgroundSize(1.0, 1.0, true, true, false, false)
+                );
+
+                DialogPane pane = dialog.getDialogPane();
+                pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+                // Build list of checkboxes
+                List<CheckBox> checkBoxes = new ArrayList<>();
+                for (Game game : allGames) {
+                    CheckBox cb = new CheckBox(game.getGameName());
+                    cb.setTextFill(Color.WHITE);
+                    cb.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    cb.setUserData(game);
+                    cb.getStyleClass().add("export-checkbox");
+                    checkBoxes.add(cb);
+                }
+
+                // Use ListView for scrolling
+                ListView<CheckBox> listView = new ListView<>(FXCollections.observableArrayList(checkBoxes));
+                listView.setPrefHeight(200);
+                listView.setBackground(new Background(scrollImage));
+                listView.setStyle("-fx-background-color: transparent; -fx-background-insets: 0;");
+
+                listView.setCellFactory(lv -> new ListCell<>() {
+                    @Override
+                    protected void updateItem(CheckBox cb, boolean empty) {
+                        super.updateItem(cb, empty);
+                        if (empty || cb == null) {
+                            setGraphic(null);
+                            setText(null);
+                            setStyle("-fx-background-color: transparent;");
+                        } else {
+                            setGraphic(cb);
+                            setText(null);
+                            setStyle("-fx-background-color: transparent;");
+                        }
+                    }
+                });
+
+                // Compose content
+                VBox contentBox = new VBox(10, listView);
+                contentBox.setPadding(new Insets(20));
+
+                // Apply dialog background
+                BackgroundImage bgImage = new BackgroundImage(
+                    backgroundImage,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.CENTER,
+                    new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+                );
+                contentBox.setBackground(new Background(bgImage));
+                pane.setBackground(new Background(bgImage));
+
+                pane.setContent(contentBox);
+
+                // Configure buttons
+                Button okButton = (Button) pane.lookupButton(ButtonType.OK);
+                okButton.setText(messages.getString("save"));
+                okButton.getStyleClass().add("button");
+                Button cancelButton = (Button) pane.lookupButton(ButtonType.CANCEL);
+                cancelButton.setText(messages.getString("cancel"));
+                cancelButton.getStyleClass().add("button");
+
+                // Handle export result
+                if (dialog.showAndWait().filter(result -> result == ButtonType.OK).isPresent()) {
+                    List<Game> selectedGames = checkBoxes.stream()
+                        .filter(CheckBox::isSelected)
+                        .map(cb -> (Game) cb.getUserData())
+                        .collect(Collectors.toList());
+                    // Show alert if no games selected
+                    if (selectedGames.isEmpty()) {
+                        Alert warning = new Alert(Alert.AlertType.WARNING);
+                        warning.setTitle(messages.getString("export"));
+                        warning.setHeaderText(null);
+                        warning.setContentText(messages.getString("noSelection"));
+                        warning.initOwner(stage);
+                        DialogPane warningPane = warning.getDialogPane();
+                        BackgroundImage warningBg = new BackgroundImage(
+                            backgroundImage,
+                            BackgroundRepeat.NO_REPEAT,
+                            BackgroundRepeat.NO_REPEAT,
+                            BackgroundPosition.CENTER,
+                            new BackgroundSize(
+                                BackgroundSize.AUTO, BackgroundSize.AUTO,
+                                false, false, true, true
+                            )
+                        );
+                        warningPane.setBackground(new Background(warningBg));
+                        // Set content label color and font
+                        Label warningContent = (Label) warning.getDialogPane().lookup(".content.label");
+                        if (warningContent != null) {
+                            warningContent.setTextFill(Color.WHITE);
+                            warningContent.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                        }
+                        Button warningOk = (Button) warning.getDialogPane().lookupButton(ButtonType.OK);
+                        warningOk.getStyleClass().add("button");
+                        warning.showAndWait();
+                        return;
+                    }
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle(messages.getString("export"));
+                    fileChooser.getExtensionFilters().add(
+                        new FileChooser.ExtensionFilter("JSON Files", "*.json")
+                    );
+                    File file = fileChooser.showSaveDialog(stage);
+                    if (file != null) {
+                        saveGamesToJson(selectedGames, file.getAbsolutePath());
+                        Alert info = new Alert(Alert.AlertType.INFORMATION);
+                        info.setTitle(messages.getString("export"));
+                        info.setHeaderText(null);
+                        info.setContentText(messages.getString("exportSuccess") + "\n" + file.getAbsolutePath());
+                        info.initOwner(stage);
+                        info.showAndWait();
+                    }
+                }
+            });
         importButton.getStyleClass().add("button");
         importButton.getStyleClass().add("import-button");
         importButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -773,7 +891,6 @@ public class HelloApplication extends Application {
         helpButton.setText("Help");
         helpButton.setOnAction(e -> {
             Dialog<Void> dialog = new Dialog<>();
-            
             String helpTitle = messages.containsKey("help") ? messages.getString("help") : "Help";
             String okText = messages.containsKey("ok") ? messages.getString("ok") : "OK";
             String helpMessage = messages.containsKey("help.message") ?
@@ -809,12 +926,15 @@ public class HelloApplication extends Application {
             );
             content.setBackground(new Background(bgImage));
             pane.setBackground(new Background(bgImage));
+            // Attach application button styles to the dialog so the OK button picks up the theme
+            pane.getStylesheets().add(getClass().getResource("/buttonStyles.css").toExternalForm());
 
             pane.setContent(content);
 
             Button okButton = (Button) pane.lookupButton(ButtonType.OK);
             okButton.setText(okText);
-            okButton.getStyleClass().add("button");
+            okButton.getStyleClass().setAll("button");
+            ButtonBar.setButtonUniformSize(okButton, false);
 
             dialog.showAndWait();
         });
