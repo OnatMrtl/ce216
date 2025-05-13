@@ -1,0 +1,35 @@
+.top-menu {
+    -fx-background-color: transparent;
+    -fx-alignment: center_left;
+}
+
+.top-menu .clock {
+    -fx-text-fill: white;
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 15px 0 0;
+}
+
+.top-menu .button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-border-color: #244658;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+    -fx-font-family: "Arial";
+    -fx-font-size: 15px;
+    -fx-cursor: hand;
+    -fx-padding: 4px 12px;
+}
+
+.top-menu .button.add-button {
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+}
+
+.top-menu .button.library-button.selected,
+.top-menu .button.settings-button.selected {
+    -fx-border-width: 4px;
+    -fx-font-weight: bold;
+}
