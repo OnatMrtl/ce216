@@ -37,6 +37,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -79,6 +81,8 @@ public class HelloApplication extends Application {
     protected Text languageText = new Text(messages.getString("language"));
     protected Text favoriteText = new Text(messages.getString("favorite"));
     protected ComboBox<String> filterButton =new ComboBox<>();
+
+    private final Set<String> selectedGenres = new HashSet<>();
 
     protected Image backgroundImage = new Image(Objects.requireNonNull(getClass().getResource("/cover_arts/Steam Background.jpeg")).toExternalForm());
 
@@ -177,8 +181,28 @@ public class HelloApplication extends Application {
         searchField.prefWidthProperty().bind(stage.widthProperty().multiply(0.3)); // Arama çubuğu %30 genişlikte
         searchField.prefHeight(30);
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterGameList(newValue);
+            applyCombinedFilter();
         });
+
+        /* ---------- Multi‑genre filter menu ---------- */
+        MenuButton genreMenu = new MenuButton(messages.getString("genre"));
+        genreMenu.getStyleClass().add("button");
+        genreMenu.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+
+        Set<String> genres = allGames.stream()
+                .map(Game::getGameGenre)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(TreeSet::new));
+
+        for (String g : genres) {
+            CheckMenuItem item = new CheckMenuItem(g);
+            item.selectedProperty().addListener((obs, oldVal, now) -> {
+                if (now)  selectedGenres.add(g);
+                else      selectedGenres.remove(g);
+                applyCombinedFilter();
+            });
+            genreMenu.getItems().add(item);
+        }
 
         /// ////////////
         // Styled Tag Filter ListView
@@ -212,7 +236,7 @@ public class HelloApplication extends Application {
 
 // Listener for filtering on tag change
         tagFilterView.getSelectionModel().getSelectedItems().addListener((ListChangeListener<String>) change -> {
-            filterGameList(searchField.getText());
+            applyCombinedFilter();
         });
         /// /////////////
 
@@ -746,7 +770,7 @@ public class HelloApplication extends Application {
         VBox tagFilterBox = new VBox(tagLabel, tagFilterView);
         tagFilterBox.setSpacing(5);
 
-        HBox searchBox = new HBox(10, searchField, filterButton, tagFilterBox);
+        HBox searchBox = new HBox(10, searchField , filterButton, genreMenu);
         /// ///////////
 
 
@@ -1128,6 +1152,7 @@ public class HelloApplication extends Application {
         stage.setMinWidth(800);
         stage.setMinHeight(500);
         windowedScene.setFill(Color.DARKBLUE);
+        applyCombinedFilter();
         stage.show();
 
     }
@@ -1208,5 +1233,33 @@ public class HelloApplication extends Application {
         // Seçimi temizleyip tekrar seçerek InfoBox'ı günceller
         gameListView.getSelectionModel().clearSelection();
         gameListView.getSelectionModel().select(game);
+    }
+    /** Filters list by search query AND the multi‑genre menu */
+    private void applyCombinedFilter() {
+        String query = searchField.getText() == null ? "" : searchField.getText().toLowerCase();
+        List<String> selectedTags = tagFilterView.getSelectionModel().getSelectedItems();
+
+        List<Game> filtered = allGames.stream()
+            .filter(g -> {
+                boolean matchesQuery =
+                        query.isBlank() ||
+                        (g.getGameName() != null && g.getGameName().toLowerCase().contains(query)) ||
+                        (g.getGameGenre() != null && g.getGameGenre().toLowerCase().contains(query)) ||
+                        (g.getDeveloperName() != null && g.getDeveloperName().toLowerCase().contains(query)) ||
+                        (g.getPublisherName() != null && g.getPublisherName().toLowerCase().contains(query)) ||
+                        String.valueOf(g.getReleaseYear()).contains(query);
+
+                boolean matchesGenre =
+                        selectedGenres.isEmpty() ||
+                        (g.getGameGenre() != null && selectedGenres.contains(g.getGameGenre()));
+
+                boolean matchesTags =
+                        selectedTags.isEmpty() || g.getTags().containsAll(selectedTags);
+
+                return matchesQuery && matchesGenre && matchesTags;
+            })
+            .collect(Collectors.toList());
+
+        gameList.setAll(filtered);
     }
 }
