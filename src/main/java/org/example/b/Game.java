@@ -1,4 +1,6 @@
 package org.example.b;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Game {
     private String gameName;
@@ -12,6 +14,7 @@ public class Game {
     private float publicRating;
     private String coverPath;
     private boolean favGame;
+    private List<String> tags = new ArrayList<>();
 
     public Game(String gameName,String gameGenre, String developerName, String publisherName, int releaseYear, float hoursPlayed, String gameInfo, int SteamID, float publicRating, String coverPath) {
         this.gameInfo = gameInfo;
@@ -28,6 +31,7 @@ public class Game {
         } else {
             this.coverPath = "file:src/main/Cover Arts/NemaFoto.jpg";
         }
+
     }
 
     public float getHoursPlayed() { return hoursPlayed; }
@@ -73,4 +77,14 @@ public class Game {
     public void setCoverPath(String coverPath) {
         this.coverPath = coverPath;
     }
+
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
 }
+

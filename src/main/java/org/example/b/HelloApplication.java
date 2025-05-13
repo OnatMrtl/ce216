@@ -1,5 +1,4 @@
 package org.example.b;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Alert;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,8 +11,6 @@ import javafx.stage.Modality;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.HPos;
 import javafx.scene.control.Dialog;
@@ -55,15 +52,14 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-import javafx.collections.FXCollections;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.CheckBox;
+import java.util.stream.Stream;
+import javafx.collections.ListChangeListener;
 
 public class HelloApplication extends Application {
     private ListView<Game> gameListView;
     private ObservableList<Game> gameList; // Dinamik liste
     private List<Game> allGames; // Tüm oyunların saklandığı liste
+    private ListView<String> tagFilterView;
     private static Locale currentLocale = new Locale("en"); // Varsayılan İngilizce
     protected Button settingsButton = new Button();
     protected TextField searchField = new TextField();
@@ -102,12 +98,19 @@ public class HelloApplication extends Application {
 
     // Oyun listesini filtreleme fonksiyonu
     private void filterGameList(String searchText) {
+        List<String> selectedTags = tagFilterView.getSelectionModel().getSelectedItems();
+
         List<Game> filteredGames = allGames.stream()
-                .filter(game -> game.getGameName().toLowerCase().contains(searchText.toLowerCase()) ||
-                        game.getGameGenre().toLowerCase().contains(searchText.toLowerCase()) ||
-                        game.getPublisherName().toLowerCase().contains(searchText.toLowerCase()) ||
-                        game.getDeveloperName().toLowerCase().contains(searchText.toLowerCase()) ||
-                        game.getYearString().contains(searchText.toLowerCase()))
+                .filter(game ->
+                        (searchText == null || searchText.isEmpty() ||
+                                game.getGameName().toLowerCase().contains(searchText.toLowerCase()) ||
+                                game.getGameGenre().toLowerCase().contains(searchText.toLowerCase()) ||
+                                game.getPublisherName().toLowerCase().contains(searchText.toLowerCase()) ||
+                                game.getDeveloperName().toLowerCase().contains(searchText.toLowerCase()) ||
+                                game.getYearString().contains(searchText.toLowerCase()))
+                                &&
+                                (selectedTags.isEmpty() || game.getTags().containsAll(selectedTags))
+                )
                 .collect(Collectors.toList());
 
         gameList.setAll(filteredGames);
@@ -132,6 +135,7 @@ public class HelloApplication extends Application {
             // Varsayılan oyunlar burada eklenebilir
             saveGamesToJson(allGames, savePath);
         }
+        tagFilterView = new ListView<>();
 
         Collections.sort(allGames, Comparator.comparing(Game::getGameName));
         gameList = FXCollections.observableArrayList(allGames);
@@ -175,6 +179,43 @@ public class HelloApplication extends Application {
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filterGameList(newValue);
         });
+
+        /// ////////////
+        // Styled Tag Filter ListView
+        tagFilterView = new ListView<>();
+        tagFilterView.setPrefHeight(100);
+        tagFilterView.setPrefWidth(150);
+        tagFilterView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        tagFilterView.setStyle(
+                "-fx-background-color: transparent;" +
+                        "-fx-control-inner-background: transparent;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-border-color: #244658;" +
+                        "-fx-border-radius: 5;" +
+                        "-fx-border-width: 2px;" +
+                        "-fx-background-radius: 5;" +
+                        "-fx-font-family: 'Arial';" +
+                        "-fx-font-weight: bold;"
+        );
+
+// Extract all tags from allGames
+        Set<String> allTags = allGames.stream()
+                .flatMap(game -> {
+                    List<String> tags = game.getTags();
+                    return tags != null ? tags.stream() : Stream.empty();
+                })
+                .collect(Collectors.toCollection(TreeSet::new));
+        tagFilterView.setItems(FXCollections.observableArrayList(allTags));
+
+// Optional: click debug
+// tagFilterView.setOnMouseClicked(e -> System.out.println("Selected: " + tagFilterView.getSelectionModel().getSelectedItems()));
+
+// Listener for filtering on tag change
+        tagFilterView.getSelectionModel().getSelectedItems().addListener((ListChangeListener<String>) change -> {
+            filterGameList(searchField.getText());
+        });
+        /// /////////////
+
         searchField.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5 ");
 
         VBox detailBox = new VBox(10);
@@ -407,6 +448,19 @@ public class HelloApplication extends Application {
                     steamIDField.setStyle(searchField.getStyle());
                     steamIDField.setStyle(steamIDField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;");
 
+                    /// ///////
+                    TextField tagsField = new TextField(String.join(", ", game.getTags()));
+                    tagsField.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
+                    tagsField.setPrefHeight(30);
+                    tagsField.setStyle(searchField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;");
+
+                    Label tagsLabel = new Label("Tags:");
+                    tagsLabel.setTextFill(Color.WHITE);
+                    tagsLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    grid.add(tagsLabel, 0, 8);
+                    grid.add(tagsField, 1, 8);
+                    /// ////////////
+
                     Label imagePathLabel = new Label(game.getCoverPath());
                     imagePathLabel.setTextFill(Color.WHITE);
                     imagePathLabel.setFont(Font.font("Arial", FontWeight.BOLD, 10));
@@ -526,6 +580,16 @@ public class HelloApplication extends Application {
                         game.setReleaseYear(Integer.parseInt(yearField.getText()));
                         game.setSteamID(Integer.parseInt(steamIDField.getText()));
                         game.setCoverPath(imagePathLabel.getText());
+
+                        /// ////////////
+                        List<String> parsedTags = Arrays.stream(tagsField.getText().split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isEmpty())
+                                .collect(Collectors.toList());
+                        game.setTags(parsedTags);
+                        /// ////////////
+
+
                         // Refresh gameImageView with new cover path
                         File newCoverFile = new File(game.getCoverPath());
                         if (newCoverFile.exists()) {
@@ -673,7 +737,17 @@ public class HelloApplication extends Application {
             gameListView.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5 ");
             gameListView.refresh();
         });
-        HBox searchBox = new HBox(10,searchField,filterButton);
+        //HBox searchBox = new HBox(10,searchField,filterButton);
+/// ////////////
+        Label tagLabel = new Label("Filter by Tags:");
+        tagLabel.setTextFill(Color.WHITE);
+        tagLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+
+        VBox tagFilterBox = new VBox(tagLabel, tagFilterView);
+        tagFilterBox.setSpacing(5);
+
+        HBox searchBox = new HBox(10, searchField, filterButton, tagFilterBox);
+        /// ///////////
 
 
 
@@ -1101,11 +1175,29 @@ public class HelloApplication extends Application {
         }
     }
 
-    private List<Game> readGamesFromJson(String filePath) {
+    /*private List<Game> readGamesFromJson(String filePath) {
         Gson gson = new Gson();
         try (FileReader reader = new FileReader(filePath)) {
             Game[] games = gson.fromJson(reader, Game[].class);
             return games != null ? new ArrayList<>(Arrays.asList(games)) : new ArrayList<>();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }*/
+    private List<Game> readGamesFromJson(String filePath) {
+        Gson gson = new Gson();
+        try (FileReader reader = new FileReader(filePath)) {
+            Game[] games = gson.fromJson(reader, Game[].class);
+            List<Game> gameList = games != null ? new ArrayList<>(Arrays.asList(games)) : new ArrayList<>();
+
+            for (Game game : gameList) {
+                if (game.getTags() == null) {
+                    game.setTags(new ArrayList<>());
+                }
+            }
+
+            return gameList;
         } catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();

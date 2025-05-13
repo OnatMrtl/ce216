@@ -10,7 +10,8 @@
     "SteamID": 107100,
     "publicRating": 86.0,
     "coverPath": "cover_arts/Bastion.jpg",
-    "favGame": false
+    "favGame": false,
+    "tags": ["Narrative", "Action", "Indie"]
   },
   {
     "gameName": "Batman: Arkham Knight",
@@ -19,7 +20,8 @@
     "SteamID": 0,
     "publicRating": 0.0,
     "coverPath": "cover_arts/Batman_Arkham_Knight_Cover_Art.jpg",
-    "favGame": false
+    "favGame": false,
+    "tags": ["Action", "Superhero", "Open World"]
   },
   {
     "gameName": "Cuphead",
@@ -32,7 +34,8 @@
     "SteamID": 268910,
     "publicRating": 88.0,
     "coverPath": "cover_arts/Cuphead.jpg",
-    "favGame": false
+    "favGame": false,
+    "tags": ["Platformer", "Hardcore", "Indie"]
   },
   {
     "gameName": "Dark Souls: Remastered",
@@ -45,7 +48,8 @@
     "SteamID": 570940,
     "publicRating": 90.0,
     "coverPath": "cover_arts/Dark_Souls_Remastered_Cover_Art.jpeg",
-    "favGame": true
+    "favGame": true,
+    "tags": ["Challenging", "Soulslike", "Dark Fantasy"]
   },
   {
     "gameName": "Elden Ring",
@@ -58,7 +62,8 @@
     "SteamID": 0,
     "publicRating": 94.0,
     "coverPath": "cover_arts/Elden_Ring_Cover_Art.jpg",
-    "favGame": true
+    "favGame": true,
+    "tags": ["Soulslike", "Open World", "Dark Fantasy"]
   },
   {
     "gameName": "Hades",
@@ -71,7 +76,8 @@
     "SteamID": 0,
     "publicRating": 93.0,
     "coverPath": "file:/Users/onatmuratli/Documents/GitHub/ce216/src/main/resources/cover_arts/EA_Football_Club_25_Cover_Art.jpg",
-    "favGame": true
+    "favGame": true,
+    "tags": ["Roguelike", "Action", "Greek Mythology"]
   },
   {
     "gameName": "Half-Life 2",
@@ -84,7 +90,8 @@
     "SteamID": 220,
     "publicRating": 96.0,
     "coverPath": "cover_arts/IMG_2050.jpg",
-    "favGame": false
+    "favGame": false,
+    "tags": ["FPS", "Sci-Fi", "Classic"]
   },
   {
     "gameName": "Minecraft",
@@ -97,7 +104,8 @@
     "SteamID": 0,
     "publicRating": 93.0,
     "coverPath": "cover_arts/Minecraft_Cover_Art.jpg",
-    "favGame": false
+    "favGame": false,
+    "tags": ["Creative", "Survival", "Multiplayer"]
   },
   {
     "gameName": "Portal 2",
@@ -110,7 +118,8 @@
     "SteamID": 620,
     "publicRating": 95.0,
     "coverPath": "cover_arts/Portal2.jpg",
-    "favGame": false
+    "favGame": false,
+    "tags": ["Puzzle", "Humor", "Sci-Fi"]
   },
   {
     "gameName": "Slay the Spire",
@@ -123,7 +132,8 @@
     "SteamID": 646570,
     "publicRating": 90.0,
     "coverPath": "cover_arts/NemaFoto.jpg",
-    "favGame": false
+    "favGame": false,
+    "tags": ["Deckbuilding", "Strategy", "Roguelike"]
   },
   {
     "gameName": "Stardew Valley",
@@ -136,7 +146,8 @@
     "SteamID": 0,
     "publicRating": 89.0,
     "coverPath": "cover_arts/StardewValley.jpeg",
-    "favGame": true
+    "favGame": true,
+    "tags": ["Farming", "Relaxing", "RPG"]
   },
   {
     "gameName": "Terraria",
@@ -149,7 +160,8 @@
     "SteamID": 105600,
     "publicRating": 97.0,
     "coverPath": "cover_arts/Terraria.jpg",
-    "favGame": false
+    "favGame": false,
+    "tags": ["Sandbox", "Adventure", "Crafting"]
   },
   {
     "gameName": "The Witness",
@@ -162,7 +174,8 @@
     "SteamID": 0,
     "publicRating": 87.0,
     "coverPath": "cover_arts/PP.jpg",
-    "favGame": false
+    "favGame": false,
+    "tags": ["Puzzle", "Exploration", "Mystery"]
   },
   {
     "gameName": "Undertale",
@@ -175,6 +188,7 @@
     "SteamID": 391540,
     "publicRating": 92.0,
     "coverPath": "cover_arts/Undertale.jpg",
-    "favGame": true
+    "favGame": true,
+    "tags": ["RPG", "Indie", "Choices Matter"]
   }
 ]
