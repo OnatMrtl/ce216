@@ -1,4 +1,5 @@
 package org.example.b;
+import javafx.scene.control.Alert;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.*;
@@ -710,7 +711,21 @@ public class HelloApplication extends Application {
         exportButton.getStyleClass().add("export-button");
         exportButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         exportButton.setOnAction(e -> {
-            //d0n4t
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle(messages.getString("export"));
+            fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("JSON Files", "*.json")
+            );
+            File file = fileChooser.showSaveDialog(stage);
+            if (file != null) {
+                saveGamesToJson(allGames, file.getAbsolutePath());
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(messages.getString("export"));
+                alert.setHeaderText(null);
+                alert.setContentText(messages.getString("exportSuccess") + "\n" + file.getAbsolutePath());
+                alert.initOwner(stage);
+                alert.showAndWait();
+            }
         });
 
         importButton.getStyleClass().add("button");
