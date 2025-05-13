@@ -45,4 +45,32 @@ public class Game {
     }
     public boolean isFavGame() { return favGame; }
     public void setFavGame(boolean favGame) { this.favGame = favGame; }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
+    }
+
+    public void setGameGenre(String gameGenre) {
+        this.gameGenre = gameGenre;
+    }
+
+    public void setDeveloperName(String developerName) {
+        this.developerName = developerName;
+    }
+
+    public void setPublisherName(String publisherName) {
+        this.publisherName = publisherName;
+    }
+
+    public void setReleaseYear(int releaseYear) {
+        this.releaseYear = releaseYear;
+    }
+
+    public void setSteamID(int SteamID) {
+        this.SteamID = SteamID;
+    }
+
+    public void setCoverPath(String coverPath) {
+        this.coverPath = coverPath;
+    }
 }

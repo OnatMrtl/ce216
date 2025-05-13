@@ -1,0 +1,20 @@
+.button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: white;
+    -fx-border-color: #244658;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: transparent;
+}
+
+.button:pressed {
+    -fx-background-color: transparent;
+}

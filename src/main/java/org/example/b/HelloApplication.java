@@ -4,18 +4,34 @@ import com.google.gson.GsonBuilder;
 import java.io.*;
 import java.util.Arrays;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.scene.layout.Region;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.layout.GridPane;
+import javafx.geometry.HPos;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import java.util.Optional;
+import java.net.URL;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.Button;
+import java.io.File;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundSize;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -24,12 +40,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import javax.swing.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -38,11 +52,12 @@ import java.util.stream.Collectors;
 public class HelloApplication extends Application {
     private ObservableList<Game> gameList; // Dinamik liste
     private List<Game> allGames; // Tüm oyunların saklandığı liste
-    private static Locale currentLocale = new Locale("en"); // Varsayılan Türkçe
+    private static Locale currentLocale = new Locale("en"); // Varsayılan İngilizce
     protected Button settingsButton = new Button();
     protected TextField searchField = new TextField();
     protected Button addButton = new Button("+");
     protected Button libButton = new Button();
+    protected Button editButton = new Button();
     protected Text genreText = new Text(messages.getString("genre"));
     protected Text developerText = new Text(messages.getString("developer"));
     protected Text publisherText = new Text(messages.getString("publisher"));
@@ -54,6 +69,8 @@ public class HelloApplication extends Application {
     protected Text languageText = new Text(messages.getString("language"));
     protected Text favoriteText = new Text(messages.getString("favorite"));
     protected ComboBox<String> filterButton =new ComboBox<>();
+
+    protected Image backgroundImage = new Image("file:src/main/Cover Arts/Steam Background.jpeg");
 
     private static ResourceBundle messages = ResourceBundle.getBundle("lang", currentLocale);
 
@@ -300,8 +317,8 @@ public class HelloApplication extends Application {
                         }}
                 );
                 ToggleButton favButton = new ToggleButton("★");
+                favButton.getStyleClass().add("button");
                 favButton.setText(newValue.isFavGame() ? "★" : "☆");
-                favButton.setStyle("-fx-background-color: transparent;-fx-border-color: #244658;-fx-border-width: 2px;-fx-text-fill: white;-fx-prompt-text-fill: white;-fx-border-radius: 5");
                 favButton.setOnAction(e -> {
                     boolean newState = !newValue.isFavGame();
                     newValue.setFavGame(newState);
@@ -329,9 +346,169 @@ public class HelloApplication extends Application {
                 HBox favHBox = new HBox(10,favLabel,favButton);
                 favHBox.setAlignment(Pos.CENTER);
                 VBox imageBox = new VBox(10,gameImageView,favHBox);
+
+                editButton = new Button(messages.getString("edit"));
+                editButton.getStyleClass().add("button");
+                editButton.setMinWidth(Region.USE_PREF_SIZE);
+                editButton.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                editButton.setOnAction(e -> {
+                    Game game = gameListView.getSelectionModel().getSelectedItem();
+                    if (game == null) return;
+
+                    Dialog<ButtonType> dialog = new Dialog<>();
+                    dialog.setTitle(messages.getString("edit"));
+                    dialog.initOwner(stage);
+                    dialog.initModality(Modality.APPLICATION_MODAL);
+
+                    DialogPane pane = dialog.getDialogPane();
+                    GridPane grid = new GridPane();
+                    grid.setHgap(10);
+                    grid.setVgap(10);
+                    grid.setPadding(new Insets(20));
+
+                    // Wrap form in a VBox and apply background image
+                    VBox contentBox = new VBox(grid);
+                    contentBox.setPadding(new Insets(20));
+                    BackgroundImage bgImage = new BackgroundImage(
+                        backgroundImage,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundPosition.CENTER,
+                        new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+                    );
+                    contentBox.setBackground(new Background(bgImage));
+                    pane.setBackground(new Background(bgImage));
+
+                    TextField nameField = new TextField(game.getGameName());
+                    TextField genreField = new TextField(game.getGameGenre());
+                    TextField devField = new TextField(game.getDeveloperName());
+                    TextField pubField = new TextField(game.getPublisherName());
+                    TextField yearField = new TextField(String.valueOf(game.getReleaseYear()));
+                    TextField steamIDField = new TextField(String.valueOf(game.getSteamID()));
+                    steamIDField.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
+                    steamIDField.setPrefHeight(30);
+                    steamIDField.setStyle(searchField.getStyle());
+                    steamIDField.setStyle(steamIDField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;");
+
+                    Label imagePathLabel = new Label(game.getCoverPath());
+                    imagePathLabel.setTextFill(Color.WHITE);
+                    imagePathLabel.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+
+                    Button uploadButton = new Button(messages.getString("chooseFile"));
+                    uploadButton.getStyleClass().add("button");
+                    uploadButton.setOnAction(ev -> {
+                        FileChooser fileChooser = new FileChooser();
+                        fileChooser.setTitle("Select Cover Image");
+                        fileChooser.getExtensionFilters().addAll(
+                            new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp")
+                        );
+                        File selectedFile = fileChooser.showOpenDialog(stage);
+                        if (selectedFile != null) {
+                            imagePathLabel.setText(selectedFile.toURI().toString());
+                        }
+                    });
+
+                    // Match searchField style, width, and height for all fields
+                    nameField.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
+                    nameField.setPrefHeight(30);
+                    nameField.setStyle(searchField.getStyle());
+
+                    genreField.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
+                    genreField.setPrefHeight(30);
+                    genreField.setStyle(searchField.getStyle());
+
+                    devField.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
+                    devField.setPrefHeight(30);
+                    devField.setStyle(searchField.getStyle());
+
+                    pubField.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
+                    pubField.setPrefHeight(30);
+                    pubField.setStyle(searchField.getStyle());
+
+                    yearField.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
+                    yearField.setPrefHeight(30);
+                    yearField.setStyle(searchField.getStyle());
+
+                    // Set text color and font family (after base style)
+                    nameField.setStyle(nameField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;");
+                    genreField.setStyle(genreField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;");
+                    devField.setStyle(devField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;");
+                    pubField.setStyle(pubField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;");
+                    yearField.setStyle(yearField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;");
+
+                    Label nameLabel = new Label(messages.getString("gameName") + ":");
+                    nameLabel.setTextFill(Color.WHITE);
+                    nameLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    grid.add(nameLabel, 0, 0);
+                    grid.add(nameField, 1, 0);
+
+                    Label genreLabel = new Label(messages.getString("genre") + ":");
+                    genreLabel.setTextFill(Color.WHITE);
+                    genreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    grid.add(genreLabel, 0, 1);
+                    grid.add(genreField, 1, 1);
+
+                    Label developerLabel = new Label(messages.getString("developer") + ":");
+                    developerLabel.setTextFill(Color.WHITE);
+                    developerLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    grid.add(developerLabel, 0, 2);
+                    grid.add(devField, 1, 2);
+
+                    Label publisherLabel = new Label(messages.getString("publisher") + ":");
+                    publisherLabel.setTextFill(Color.WHITE);
+                    publisherLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    grid.add(publisherLabel, 0, 3);
+                    grid.add(pubField, 1, 3);
+
+                    Label releaseDateLabel = new Label(messages.getString("releaseDate") + ":");
+                    releaseDateLabel.setTextFill(Color.WHITE);
+                    releaseDateLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    grid.add(releaseDateLabel, 0, 4);
+                    grid.add(yearField, 1, 4);
+                    Label steamIDLabel = new Label("SteamID:");
+                    steamIDLabel.setTextFill(Color.WHITE);
+                    steamIDLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    grid.add(steamIDLabel, 0, 5);
+                    grid.add(steamIDField, 1, 5);
+
+                    Label coverImageLabel = new Label(messages.getString("coverImage") + ":");
+                    coverImageLabel.setTextFill(Color.WHITE);
+                    coverImageLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    grid.add(coverImageLabel, 0, 6);
+                    grid.add(uploadButton, 1, 6);
+                    grid.add(imagePathLabel, 1, 7);
+
+                    pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+                    pane.setContent(contentBox);
+
+                    Button okButton = (Button) pane.lookupButton(ButtonType.OK);
+                    Button cancelButton = (Button) pane.lookupButton(ButtonType.CANCEL);
+                    okButton.getStyleClass().add("button");
+                    cancelButton.getStyleClass().add("button");
+
+                    okButton.setOnAction(ev -> {
+                        game.setGameName(nameField.getText());
+                        game.setGameGenre(genreField.getText());
+                        game.setDeveloperName(devField.getText());
+                        game.setPublisherName(pubField.getText());
+                        game.setReleaseYear(Integer.parseInt(yearField.getText()));
+                        game.setSteamID(Integer.parseInt(steamIDField.getText()));
+                        game.setCoverPath(imagePathLabel.getText());
+                        saveGamesToJson(allGames, savePath);
+                        gameListView.refresh();
+                        gameListView.getSelectionModel().clearSelection();
+                        gameListView.getSelectionModel().select(game);
+                        dialog.close();
+                    });
+
+                    cancelButton.setOnAction(ev -> dialog.close());
+                    dialog.showAndWait();
+                });
+
                 detailBox.getChildren().setAll(titleLabel, genreFlow, hoursPlayedFlow, developerFlow, publisherFlow,
                         yearFlow, ratingFlow, descriptionFlow, steamIDFlow);
-                InfoBox.getChildren().addAll(imageBox, detailBox);
+                InfoBox.getChildren().addAll(imageBox, detailBox,editButton);
             }
         });
         filterButton.setPromptText("≡");
@@ -475,6 +652,7 @@ public class HelloApplication extends Application {
         Label clockLabel = new Label();
         clockLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         clockLabel.setTextFill(Color.WHITE);
+        clockLabel.getStyleClass().add("clock");
         Timeline clock = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             clockLabel.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
         }));
@@ -484,20 +662,20 @@ public class HelloApplication extends Application {
 
 
         libButton.setText(messages.getString("library"));
+        libButton.getStyleClass().add("button");
+        libButton.getStyleClass().add("library-button");
         libButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        libButton.setBorder(buttonBorderBold);
-        libButton.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-prompt-text-fill: white;");
 
 
         settingsButton.setText(messages.getString("settings"));
+        settingsButton.getStyleClass().add("button");
+        settingsButton.getStyleClass().add("settings-button");
         settingsButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        settingsButton.setBorder(buttonBorder);
-        settingsButton.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-prompt-text-fill: white;");
 
 
+        addButton.getStyleClass().add("button");
+        addButton.getStyleClass().add("add-button");
         addButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        addButton.setBorder(buttonBorder);
-        addButton.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-prompt-text-fill: white;");
 
         addButton.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
@@ -519,6 +697,7 @@ public class HelloApplication extends Application {
         });
 
         BorderPane menuPane = new BorderPane();
+        menuPane.getStyleClass().add("top-menu");
 
         HBox leftMenu = new HBox(5, addButton, clockLabel);
         leftMenu.setAlignment(Pos.CENTER_LEFT);
@@ -535,15 +714,6 @@ public class HelloApplication extends Application {
         Separator separator = new Separator();
 
 
-        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
-            gameListView.setPrefWidth(newVal.doubleValue() * 0.3);
-            detailBox.setPrefWidth(newVal.doubleValue() * 0.6);
-        });
-
-        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
-            gameListView.setPrefHeight(newVal.doubleValue() * 0.8);
-            gameImageView.setFitHeight(newVal.doubleValue() * 0.5);
-        });
 
         languageText.setFill(Color.WHITE);
         languageText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -623,7 +793,6 @@ public class HelloApplication extends Application {
         });
 
 
-        Image backgroundImage = new Image("file:src/main/Cover Arts/Steam Background.jpeg");
         BackgroundImage background = new BackgroundImage(
                 backgroundImage,
                 BackgroundRepeat.NO_REPEAT, // Yatay tekrar
@@ -635,6 +804,8 @@ public class HelloApplication extends Application {
 
         Scene windowedScene = new Scene(root);
         windowedScene.getStylesheets().add(getClass().getResource("/scrollBarStyle.css").toExternalForm());
+        windowedScene.getStylesheets().add(getClass().getResource("/buttonStyles.css").toExternalForm());
+        windowedScene.getStylesheets().add(getClass().getResource("/topMenuStyles.css").toExternalForm());
         stage.setTitle("STEAM2.0 v31.12.23");
         stage.setScene(windowedScene);
         stage.setMinWidth(800);
@@ -658,7 +829,7 @@ public class HelloApplication extends Application {
         hourText.setText(messages.getString("hour"));
         languageText.setText(messages.getString("language"));
         favoriteText.setText(messages.getString("favorite"));
-
+        editButton.setText(messages.getString("edit"));
 
         filterButton.getItems().clear();
         filterButton.getItems().addAll(
