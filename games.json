@@ -13,6 +13,15 @@
     "favGame": false
   },
   {
+    "gameName": "Batman Arkham Knight",
+    "releaseYear": 0,
+    "hoursPlayed": 0.0,
+    "SteamID": 0,
+    "publicRating": 0.0,
+    "coverPath": "cover_arts/Batman_Arkham_Knight_Cover_Art.jpg",
+    "favGame": false
+  },
+  {
     "gameName": "Cuphead",
     "gameGenre": "Run and Gun",
     "developerName": "Studio MDHR",
@@ -167,14 +176,5 @@
     "publicRating": 92.0,
     "coverPath": "cover_arts/Undertale.jpg",
     "favGame": true
-  },
-  {
-    "gameName": "Batman Arkham Knight",
-    "releaseYear": 0,
-    "hoursPlayed": 0.0,
-    "SteamID": 0,
-    "publicRating": 0.0,
-    "coverPath": "cover_arts/Batman_Arkham_Knight_Cover_Art.jpg",
-    "favGame": false
   }
 ]

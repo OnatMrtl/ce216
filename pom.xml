@@ -66,13 +66,53 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>org.example.b/org.example.b.HelloApplication</mainClass>
+                            <mainClass>org.example.b.HelloApplication</mainClass>
+                            <module>javafx.controls,javafx.fxml</module>
+                            <arguments>
+                                <argument>--module-path</argument>
+                                <argument>${project.basedir}/lib/javafx-sdk-17.0.6/lib</argument>
+                                <argument>--add-modules</argument>
+                                <argument>javafx.controls,javafx.fxml</argument>
+                            </arguments>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>create-exe</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>jpackage</executable>
+                            <arguments>
+                                <argument>--type</argument>
+                                <argument>exe</argument>
+                                <argument>--input</argument>
+                                <argument>${project.build.directory}</argument>
+                                <argument>--main-jar</argument>
+                                <argument>${project.build.finalName}.jar</argument>
+                                <argument>--main-class</argument>
+                                <argument>org.example.b.HelloApplication</argument>
+                                <argument>--module-path</argument>
+                                <argument>${project.basedir}/lib/javafx-sdk-17.0.6/lib</argument>
+                                <argument>--add-modules</argument>
+                                <argument>javafx.controls,javafx.fxml</argument>
+                                <argument>--dest</argument>
+                                <argument>${project.build.directory}/installer</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
