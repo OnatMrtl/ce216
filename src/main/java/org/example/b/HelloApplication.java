@@ -60,6 +60,7 @@ public class HelloApplication extends Application {
     protected Button settingsButton = new Button();
     protected TextField searchField = new TextField();
     protected Button addButton = new Button("+");
+    protected Button helpButton = new Button("Help");
     protected Button libButton = new Button();
     protected Button editButton = new Button();
     protected Text genreText = new Text(messages.getString("genre"));
@@ -744,11 +745,62 @@ public class HelloApplication extends Application {
                 saveGamesToJson(allGames, "games.json");
             }
         });
+        helpButton.getStyleClass().add("button");
+        helpButton.getStyleClass().add("help-button");
+        helpButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        helpButton.setText("Help");
+        helpButton.setOnAction(e -> {
+            Dialog<Void> dialog = new Dialog<>();
+            
+            String helpTitle = messages.containsKey("help") ? messages.getString("help") : "Help";
+            String okText = messages.containsKey("ok") ? messages.getString("ok") : "OK";
+            String helpMessage = messages.containsKey("help.message") ?
+                    messages.getString("help.message") :
+                    "- To add games via JSON or XML, click the + button in the top-right corner.\n" +
+                            "- Click on a game in the list to view its details.\n" +
+                            "- Use the search bar to find games by name, developer, year, etc.\n" +
+                            "- Use the filter dropdown to sort or view only favorites.\n" +
+                            "- Click the star icon in the details to add/remove from favorites.\n" +
+                            "- You can switch languages in the Settings tab.\n" +
+                            "- Game cover images are shown automatically; a default image is used if missing.";
+
+            dialog.setTitle(helpTitle);
+            dialog.initModality(Modality.APPLICATION_MODAL);
+
+            DialogPane pane = dialog.getDialogPane();
+            pane.getButtonTypes().add(ButtonType.OK);
+
+            Text helpContent = new Text(helpMessage);
+            helpContent.setFont(Font.font("Arial", 12));
+            helpContent.setFill(Color.WHITE);
+
+            VBox content = new VBox(helpContent);
+            content.setPadding(new Insets(20));
+            content.setSpacing(10);
+
+            BackgroundImage bgImage = new BackgroundImage(
+                    backgroundImage,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.CENTER,
+                    new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+            );
+            content.setBackground(new Background(bgImage));
+            pane.setBackground(new Background(bgImage));
+
+            pane.setContent(content);
+
+            Button okButton = (Button) pane.lookupButton(ButtonType.OK);
+            okButton.setText(okText);
+            okButton.getStyleClass().add("button");
+
+            dialog.showAndWait();
+        });
 
         BorderPane menuPane = new BorderPane();
         menuPane.getStyleClass().add("top-menu");
 
-        HBox leftMenu = new HBox(5, addButton, clockLabel);
+        HBox leftMenu = new HBox(5, helpButton, addButton, clockLabel);
         leftMenu.setAlignment(Pos.CENTER_LEFT);
         leftMenu.setPadding(new Insets(5, 10, 5, 10));
 
@@ -879,6 +931,7 @@ public class HelloApplication extends Application {
         languageText.setText(messages.getString("language"));
         favoriteText.setText(messages.getString("favorite"));
         editButton.setText(messages.getString("edit"));
+        helpButton.setText(messages.getString("help"));
 
         filterButton.getItems().clear();
         filterButton.getItems().addAll(
