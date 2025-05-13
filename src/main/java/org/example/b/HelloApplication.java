@@ -59,7 +59,8 @@ public class HelloApplication extends Application {
     private static Locale currentLocale = new Locale("en"); // Varsayılan İngilizce
     protected Button settingsButton = new Button();
     protected TextField searchField = new TextField();
-    protected Button addButton = new Button("+");
+    protected Button importButton = new Button("Import");
+    protected Button exportButton = new Button("Export");
     protected Button helpButton = new Button("Help");
     protected Button libButton = new Button();
     protected Button editButton = new Button();
@@ -705,12 +706,18 @@ public class HelloApplication extends Application {
         settingsButton.getStyleClass().add("settings-button");
         settingsButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 
+        exportButton.getStyleClass().add("button");
+        exportButton.getStyleClass().add("export-button");
+        exportButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        exportButton.setOnAction(e -> {
+            //d0n4t
+        });
 
-        addButton.getStyleClass().add("button");
-        addButton.getStyleClass().add("add-button");
-        addButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        importButton.getStyleClass().add("button");
+        importButton.getStyleClass().add("import-button");
+        importButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 
-        addButton.setOnAction(e -> {
+        importButton.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("JSON Dosyası Seç");
             fileChooser.getExtensionFilters().add(
@@ -800,7 +807,7 @@ public class HelloApplication extends Application {
         BorderPane menuPane = new BorderPane();
         menuPane.getStyleClass().add("top-menu");
 
-        HBox leftMenu = new HBox(5, helpButton, addButton, clockLabel);
+        HBox leftMenu = new HBox(5, helpButton, importButton, exportButton, clockLabel);
         leftMenu.setAlignment(Pos.CENTER_LEFT);
         leftMenu.setPadding(new Insets(5, 10, 5, 10));
 
