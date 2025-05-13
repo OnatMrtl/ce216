@@ -9,7 +9,7 @@
     "gameInfo": "A beautifully narrated action RPG.",
     "SteamID": 107100,
     "publicRating": 86.0,
-    "coverPath": "file:src/main/Cover Arts/Bastion.jpg",
+    "coverPath": "cover_arts/Bastion.jpg",
     "favGame": false
   },
   {
@@ -22,7 +22,7 @@
     "gameInfo": "A challenging platformer with 1930s cartoon-style animation.",
     "SteamID": 268910,
     "publicRating": 88.0,
-    "coverPath": "file:src/main/Cover Arts/Cuphead.jpg",
+    "coverPath": "cover_arts/Cuphead.jpg",
     "favGame": false
   },
   {
@@ -35,7 +35,7 @@
     "gameInfo": "A punishing but rewarding action RPG known for its difficulty.",
     "SteamID": 570940,
     "publicRating": 90.0,
-    "coverPath": "file:src/main/Cover Arts/DarkSouls.jpg",
+    "coverPath": "cover_arts/Dark_Souls_Remastered_Cover_Art.jpeg",
     "favGame": true
   },
   {
@@ -48,7 +48,7 @@
     "gameInfo": "Explore the vast world of the Lands Between in this challenging action RPG.",
     "SteamID": 0,
     "publicRating": 94.0,
-    "coverPath": "file:src/main/Cover Arts/Elden Ring Cover Art.jpg",
+    "coverPath": "cover_arts/Elden_Ring_Cover_Art.jpg",
     "favGame": true
   },
   {
@@ -61,7 +61,7 @@
     "gameInfo": "Battle your way out of the Underworld in this action-packed roguelike.",
     "SteamID": 0,
     "publicRating": 93.0,
-    "coverPath": "file:src/main/Cover Arts/Hades.jpeg",
+    "coverPath": "file:/Users/onatmuratli/Documents/GitHub/ce216/src/main/resources/cover_arts/EA_Football_Club_25_Cover_Art.jpg",
     "favGame": true
   },
   {
@@ -74,7 +74,7 @@
     "gameInfo": "A groundbreaking first-person shooter with a compelling narrative.",
     "SteamID": 220,
     "publicRating": 96.0,
-    "coverPath": "file:src/main/Cover Arts/HalfLife2.jpg",
+    "coverPath": "cover_arts/IMG_2050.jpg",
     "favGame": false
   },
   {
@@ -87,7 +87,7 @@
     "gameInfo": "A blocky sandbox world where you can build, explore, and survive.",
     "SteamID": 0,
     "publicRating": 93.0,
-    "coverPath": "file:/Users/onatmuratli/Documents/GitHub/ce216/src/main/Cover%20Arts/NemaFoto.jpg",
+    "coverPath": "cover_arts/Minecraft_Cover_Art.jpg",
     "favGame": false
   },
   {
@@ -100,7 +100,7 @@
     "gameInfo": "Solve physics-based puzzles with portals and humor.",
     "SteamID": 620,
     "publicRating": 95.0,
-    "coverPath": "file:src/main/Cover Arts/Portal2.jpg",
+    "coverPath": "cover_arts/Portal2.jpg",
     "favGame": false
   },
   {
@@ -113,7 +113,7 @@
     "gameInfo": "A deckbuilding roguelike with strategic gameplay.",
     "SteamID": 646570,
     "publicRating": 90.0,
-    "coverPath": "file:src/main/Cover Arts/SlayTheSpire.jpg",
+    "coverPath": "cover_arts/NemaFoto.jpg",
     "favGame": false
   },
   {
@@ -126,7 +126,7 @@
     "gameInfo": "A farming simulation game with RPG elements in a charming rural setting.",
     "SteamID": 0,
     "publicRating": 89.0,
-    "coverPath": "file:src/main/Cover Arts/StardewValley.jpeg",
+    "coverPath": "cover_arts/StardewValley.jpeg",
     "favGame": true
   },
   {
@@ -139,7 +139,7 @@
     "gameInfo": "A 2D sandbox adventure full of crafting, building, and combat.",
     "SteamID": 105600,
     "publicRating": 97.0,
-    "coverPath": "file:src/main/Cover Arts/Terraria.jpg",
+    "coverPath": "cover_arts/Terraria.jpg",
     "favGame": false
   },
   {
@@ -152,7 +152,7 @@
     "gameInfo": "Explore a mysterious island filled with challenging puzzles and secrets.",
     "SteamID": 0,
     "publicRating": 87.0,
-    "coverPath": "file:src/main/Cover Arts/TheWitness.jpeg",
+    "coverPath": "cover_arts/PP.jpg",
     "favGame": false
   },
   {
@@ -165,7 +165,16 @@
     "gameInfo": "A unique RPG where your choices truly matter.",
     "SteamID": 391540,
     "publicRating": 92.0,
-    "coverPath": "file:src/main/Cover Arts/Undertale.jpg",
+    "coverPath": "cover_arts/Undertale.jpg",
     "favGame": true
+  },
+  {
+    "gameName": "Batman Arkham Knight",
+    "releaseYear": 0,
+    "hoursPlayed": 0.0,
+    "SteamID": 0,
+    "publicRating": 0.0,
+    "coverPath": "cover_arts/Batman_Arkham_Knight_Cover_Art.jpg",
+    "favGame": false
   }
 ]

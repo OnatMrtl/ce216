@@ -3,6 +3,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.*;
 import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.scene.layout.Region;
@@ -23,6 +25,7 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundSize;
+import java.util.Objects;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -50,6 +53,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class HelloApplication extends Application {
+    private ListView<Game> gameListView;
     private ObservableList<Game> gameList; // Dinamik liste
     private List<Game> allGames; // Tüm oyunların saklandığı liste
     private static Locale currentLocale = new Locale("en"); // Varsayılan İngilizce
@@ -70,7 +74,7 @@ public class HelloApplication extends Application {
     protected Text favoriteText = new Text(messages.getString("favorite"));
     protected ComboBox<String> filterButton =new ComboBox<>();
 
-    protected Image backgroundImage = new Image("file:src/main/Cover Arts/Steam Background.jpeg");
+    protected Image backgroundImage = new Image(Objects.requireNonNull(getClass().getResource("/cover_arts/Steam Background.jpeg")).toExternalForm());
 
     private static ResourceBundle messages = ResourceBundle.getBundle("lang", currentLocale);
 
@@ -121,7 +125,7 @@ public class HelloApplication extends Application {
 
         Collections.sort(allGames, Comparator.comparing(Game::getGameName));
         gameList = FXCollections.observableArrayList(allGames);
-        ListView<Game> gameListView = new ListView<>(gameList);
+        gameListView = new ListView<>(gameList);
         gameListView.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
         gameListView.prefHeightProperty().bind(stage.heightProperty().multiply(0.8));
         gameListView.setMinWidth(250);
@@ -178,13 +182,16 @@ public class HelloApplication extends Application {
                 InfoBox.getChildren().clear();
                 String coverPath = newValue.getCoverPath();
                 Image image;
-                try {
-                    image = new Image(coverPath, false);
-                    if (image.isError()) {
-                        image = new Image("file:src/main/Cover Arts/NemaFoto.jpg");
+                File coverFile = new File(coverPath);
+                if (coverFile.exists()) {
+                    image = new Image(coverFile.toURI().toString(), false);
+                } else {
+                    URL coverUrl = getClass().getResource("/" + coverPath);
+                    if (coverUrl != null) {
+                        image = new Image(coverUrl.toExternalForm(), false);
+                    } else {
+                        image = new Image(Objects.requireNonNull(getClass().getResource("/cover_arts/NemaFoto.jpg")).toExternalForm());
                     }
-                } catch (Exception e) {
-                    image = new Image("file:src/main/Cover Arts/NemaFoto.jpg");
                 }
                 gameImageView.setImage(image);
                 Label titleLabel = new Label(newValue.getGameName());
@@ -404,7 +411,19 @@ public class HelloApplication extends Application {
                         );
                         File selectedFile = fileChooser.showOpenDialog(stage);
                         if (selectedFile != null) {
-                            imagePathLabel.setText(selectedFile.toURI().toString());
+                            try {
+                                File destDir = new File("cover_arts");
+                                if (!destDir.exists()) destDir.mkdirs();
+
+                                String targetFileName = selectedFile.getName().replaceAll("\\s+", "_");
+                                File destFile = new File(destDir, targetFileName);
+                                Files.copy(selectedFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                                destFile.setLastModified(System.currentTimeMillis());
+
+                                imagePathLabel.setText("cover_arts/" + targetFileName);
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
                         }
                     });
 
@@ -497,6 +516,17 @@ public class HelloApplication extends Application {
                         game.setReleaseYear(Integer.parseInt(yearField.getText()));
                         game.setSteamID(Integer.parseInt(steamIDField.getText()));
                         game.setCoverPath(imagePathLabel.getText());
+                        // Refresh gameImageView with new cover path
+                        File newCoverFile = new File(game.getCoverPath());
+                        if (newCoverFile.exists()) {
+                            gameImageView.setImage(new Image(newCoverFile.toURI().toString(), false));
+                        } else {
+                            URL coverUrl = getClass().getResource("/" + game.getCoverPath());
+                            if (coverUrl != null) {
+                                gameImageView.setImage(new Image(coverUrl.toExternalForm(), false));
+                            }
+                        }
+                        updateInfoBox(game);
                         saveGamesToJson(allGames, savePath);
                         gameListView.refresh();
                         gameListView.getSelectionModel().clearSelection();
@@ -688,6 +718,23 @@ public class HelloApplication extends Application {
             File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile != null) {
                 List<Game> importedGames = readGamesFromJson(selectedFile.getAbsolutePath());
+                // After reading importedGames
+                for (Game g : importedGames) {
+                    String coverPath = g.getCoverPath();
+                    File sourceFile = new File(coverPath);
+                    if (sourceFile.exists()) {
+                        File destDir = new File("cover_arts");
+                        if (!destDir.exists()) destDir.mkdirs();
+                        String targetName = sourceFile.getName().replaceAll("\\s+", "_");
+                        File destFile = new File(destDir, targetName);
+                        try {
+                            Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                            g.setCoverPath("cover_arts/" + targetName);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
                 for (Game g : importedGames) {
                     if (!allGames.contains(g)) {
                         allGames.add(g);
@@ -866,5 +913,11 @@ public class HelloApplication extends Application {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    private void updateInfoBox(Game game) {
+        // Seçimi temizleyip tekrar seçerek InfoBox'ı günceller
+        gameListView.getSelectionModel().clearSelection();
+        gameListView.getSelectionModel().select(game);
     }
 }
