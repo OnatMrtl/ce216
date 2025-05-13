@@ -483,7 +483,9 @@ public class HelloApplication extends Application {
                     pane.setContent(contentBox);
 
                     Button okButton = (Button) pane.lookupButton(ButtonType.OK);
+                    okButton.setText(messages.getString("save"));
                     Button cancelButton = (Button) pane.lookupButton(ButtonType.CANCEL);
+                    cancelButton.setText(messages.getString("cancel"));
                     okButton.getStyleClass().add("button");
                     cancelButton.getStyleClass().add("button");
 
