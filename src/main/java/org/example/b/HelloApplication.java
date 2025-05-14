@@ -1383,22 +1383,9 @@ private String selectedSortOption = null;
         }
     }
 
-    /*private List<Game> readGamesFromJson(String filePath) {
-        Gson gson = new Gson();
-        try (FileReader reader = new FileReader(filePath)) {
-            Game[] games = gson.fromJson(reader, Game[].class);
-            return games != null ? new ArrayList<>(Arrays.asList(games)) : new ArrayList<>();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }*/
     private List<Game> readGamesFromJson(String filePath) {
         Gson gson = new Gson();
-        try (
-            InputStream input = getClass().getResourceAsStream("/" + filePath);
-            InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(input))
-        ) {
+        try (FileReader reader = new FileReader(filePath)) {
             Game[] games = gson.fromJson(reader, Game[].class);
             List<Game> gameList = games != null ? new ArrayList<>(Arrays.asList(games)) : new ArrayList<>();
             for (Game game : gameList) {
@@ -1407,21 +1394,9 @@ private String selectedSortOption = null;
                 }
             }
             return gameList;
-        } catch (Exception e) {
-            // If resource not found or error, fallback to local file
-            try (FileReader reader = new FileReader(filePath)) {
-                Game[] games = gson.fromJson(reader, Game[].class);
-                List<Game> gameList = games != null ? new ArrayList<>(Arrays.asList(games)) : new ArrayList<>();
-                for (Game game : gameList) {
-                    if (game.getTags() == null) {
-                        game.setTags(new ArrayList<>());
-                    }
-                }
-                return gameList;
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                return new ArrayList<>();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 
