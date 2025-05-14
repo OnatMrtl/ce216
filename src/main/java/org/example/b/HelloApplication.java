@@ -87,7 +87,7 @@ public class HelloApplication extends Application {
     protected Text hourText = new Text(messages.getString("hour"));
     protected Text languageText = new Text(messages.getString("language"));
     protected Text favoriteText = new Text(messages.getString("favorite"));
-    protected ComboBox<String> filterButton =new ComboBox<>();
+    protected MenuButton filterButton =new MenuButton(messages.getString("sort"));
 
     private final Set<String> selectedGenres = new HashSet<>();
 
@@ -720,8 +720,8 @@ public class HelloApplication extends Application {
                 InfoBox.getChildren().addAll(imageBox, detailBox, editButton, closeButton);
             }
         });
-        filterButton.setPromptText("≡");
-        filterButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;-fx-arrows-visible: false;-fx-prompt-text-fill: white; ");
+        filterButton.setPromptText("sort");
+        filterButton.setStyle("-fx-background-color: transparent;-fx-font-weight: bold; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;-fx-arrows-visible: false;-fx-prompt-text-fill: white; ");
         // Apply the same inline style to genreMenu so they match
         genreMenu.setStyle(
                 "-fx-background-color: transparent;" +
@@ -732,7 +732,7 @@ public class HelloApplication extends Application {
                 "-fx-background-radius: 5;" +
                 "-fx-background-insets: 0;"
         );
-        filterButton.setPrefSize(30,30);
+        filterButton.setPrefSize(70,30);
         filterButton.setCellFactory(lv -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -850,7 +850,7 @@ public class HelloApplication extends Application {
             gameListView.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5 ");
             gameListView.refresh();
         });
-        //HBox searchBox = new HBox(10,searchField,filterButton);
+
         Label tagLabel = new Label("Filter by Tags:");
         tagLabel.setTextFill(Color.WHITE);
         tagLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
@@ -859,8 +859,6 @@ public class HelloApplication extends Application {
         tagFilterBox.setSpacing(5);
 
         HBox searchBox = new HBox(10, searchField , filterButton, genreMenu);
-
-
 
 
         HBox.setHgrow(gameListView, Priority.ALWAYS);
@@ -1381,6 +1379,7 @@ public class HelloApplication extends Application {
         libButton.setText(messages.getString("library"));
         settingsButton.setText(messages.getString("settings"));
         searchField.setPromptText(messages.getString("search"));
+        filterButton.setPromptText(messages.getString("sort"));
         genreText.setText(messages.getString("genre"));
         developerText.setText(messages.getString("developer"));
         genreMenu.setText(messages.getString("genre"));
