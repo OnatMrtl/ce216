@@ -131,6 +131,15 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) {
         String savePath = "games.json";
+        InputStream defaultJson = getClass().getResourceAsStream("/games.json");
+        File localCopy = new File("games.json");
+        if (!localCopy.exists() && defaultJson != null) {
+            try (InputStream in = defaultJson) {
+                Files.copy(in, localCopy.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         genreText = new Text(messages.getString("genre"));
         developerText = new Text(messages.getString("developer"));
         publisherText = new Text(messages.getString("publisher"));
@@ -1433,20 +1442,33 @@ public class HelloApplication extends Application {
     }*/
     private List<Game> readGamesFromJson(String filePath) {
         Gson gson = new Gson();
-        try (FileReader reader = new FileReader(filePath)) {
+        try (
+            InputStream input = getClass().getResourceAsStream("/" + filePath);
+            InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(input))
+        ) {
             Game[] games = gson.fromJson(reader, Game[].class);
             List<Game> gameList = games != null ? new ArrayList<>(Arrays.asList(games)) : new ArrayList<>();
-
             for (Game game : gameList) {
                 if (game.getTags() == null) {
                     game.setTags(new ArrayList<>());
                 }
             }
-
             return gameList;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+        } catch (Exception e) {
+            // If resource not found or error, fallback to local file
+            try (FileReader reader = new FileReader(filePath)) {
+                Game[] games = gson.fromJson(reader, Game[].class);
+                List<Game> gameList = games != null ? new ArrayList<>(Arrays.asList(games)) : new ArrayList<>();
+                for (Game game : gameList) {
+                    if (game.getTags() == null) {
+                        game.setTags(new ArrayList<>());
+                    }
+                }
+                return gameList;
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                return new ArrayList<>();
+            }
         }
     }
 
