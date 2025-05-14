@@ -1340,7 +1340,7 @@ private String selectedSortOption = null;
         windowedScene.getStylesheets().add(getClass().getResource("/scrollBarStyle.css").toExternalForm());
         windowedScene.getStylesheets().add(getClass().getResource("/buttonStyles.css").toExternalForm());
         windowedScene.getStylesheets().add(getClass().getResource("/topMenuStyles.css").toExternalForm());
-        stage.setTitle("STEAM2.0 v31.12.23");
+        stage.setTitle("Smoke™");
         stage.setScene(windowedScene);
         stage.setMinWidth(800);
         stage.setMinHeight(500);
