@@ -38,34 +38,6 @@
     "tags": ["Platformer", "Hardcore", "Indie"]
   },
   {
-    "gameName": "Dark Souls: Remastered",
-    "gameGenre": "Action RPG",
-    "developerName": "FromSoftware",
-    "publisherName": "Bandai Namco",
-    "releaseYear": 2011,
-    "hoursPlayed": 70.0,
-    "gameInfo": "A punishing but rewarding action RPG known for its difficulty.",
-    "SteamID": 570940,
-    "publicRating": 90.0,
-    "coverPath": "cover_arts/Dark_Souls_Remastered_Cover_Art.jpeg",
-    "favGame": true,
-    "tags": ["Challenging", "Soulslike", "Dark Fantasy"]
-  },
-  {
-    "gameName": "Elden Ring",
-    "gameGenre": "Action RPG",
-    "developerName": "FromSoftware",
-    "publisherName": "Bandai Namco",
-    "releaseYear": 2022,
-    "hoursPlayed": 150.0,
-    "gameInfo": "Explore the vast world of the Lands Between in this challenging action RPG.",
-    "SteamID": 0,
-    "publicRating": 94.0,
-    "coverPath": "cover_arts/Elden_Ring_Cover_Art.jpg",
-    "favGame": true,
-    "tags": ["Soulslike", "Open World", "Dark Fantasy"]
-  },
-  {
     "gameName": "Hades",
     "gameGenre": "Roguelike",
     "developerName": "Supergiant Games",
