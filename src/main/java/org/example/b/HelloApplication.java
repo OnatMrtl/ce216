@@ -1,4 +1,5 @@
 package org.example.b;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,6 +28,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundSize;
 import java.util.Objects;
+import java.util.Set;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -188,24 +190,35 @@ public class HelloApplication extends Application {
         MenuButton genreMenu = new MenuButton(messages.getString("genre"));
         genreMenu.getStyleClass().add("button");
         genreMenu.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        genreMenu.getStyleClass().add("genre-menu");
 
         Set<String> genres = allGames.stream()
                 .map(Game::getGameGenre)
                 .filter(Objects::nonNull)
+                .flatMap(s -> Arrays.stream(s.split("\\s+")))
+                .map(String::trim)
+                .filter(str -> {
+                    if (str.isEmpty()) return false;
+                    String lw = str.toLowerCase();
+                    return !Set.of(
+                        "and","or","of","the","vs","in","with",
+                        "&","ve","ile","ya","da","de"
+                    ).contains(lw);
+                })
                 .collect(Collectors.toCollection(TreeSet::new));
 
         for (String g : genres) {
             CheckMenuItem item = new CheckMenuItem(g);
             item.selectedProperty().addListener((obs, oldVal, now) -> {
-                if (now)  selectedGenres.add(g);
-                else      selectedGenres.remove(g);
+                if (now)  selectedGenres.add(g.toLowerCase());
+                else      selectedGenres.remove(g.toLowerCase());
                 applyCombinedFilter();
+                // keep menu open
+                Platform.runLater(genreMenu::show);
             });
             genreMenu.getItems().add(item);
         }
 
-        /// ////////////
-        // Styled Tag Filter ListView
         tagFilterView = new ListView<>();
         tagFilterView.setPrefHeight(100);
         tagFilterView.setPrefWidth(150);
@@ -222,7 +235,6 @@ public class HelloApplication extends Application {
                         "-fx-font-weight: bold;"
         );
 
-// Extract all tags from allGames
         Set<String> allTags = allGames.stream()
                 .flatMap(game -> {
                     List<String> tags = game.getTags();
@@ -230,16 +242,9 @@ public class HelloApplication extends Application {
                 })
                 .collect(Collectors.toCollection(TreeSet::new));
         tagFilterView.setItems(FXCollections.observableArrayList(allTags));
-
-// Optional: click debug
-// tagFilterView.setOnMouseClicked(e -> System.out.println("Selected: " + tagFilterView.getSelectionModel().getSelectedItems()));
-
-// Listener for filtering on tag change
         tagFilterView.getSelectionModel().getSelectedItems().addListener((ListChangeListener<String>) change -> {
             applyCombinedFilter();
         });
-        /// /////////////
-
         searchField.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5 ");
 
         VBox detailBox = new VBox(10);
@@ -635,14 +640,33 @@ public class HelloApplication extends Application {
                     cancelButton.setOnAction(ev -> dialog.close());
                     dialog.showAndWait();
                 });
+                // Close (X) button to hide the InfoBox
+                Button closeButton = new Button("X");
+                closeButton.getStyleClass().add("button");
+                closeButton.setMinWidth(Region.USE_PREF_SIZE);
+                closeButton.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                closeButton.setOnAction(ev -> {
+                    InfoBox.getChildren().clear();            // hide the info panel
+                    gameListView.getSelectionModel().clearSelection(); // clear list selection
+                });
 
                 detailBox.getChildren().setAll(titleLabel, genreFlow, hoursPlayedFlow, developerFlow, publisherFlow,
                         yearFlow, ratingFlow, descriptionFlow, steamIDFlow);
-                InfoBox.getChildren().addAll(imageBox, detailBox,editButton);
+                InfoBox.getChildren().addAll(imageBox, detailBox, editButton, closeButton);
             }
         });
         filterButton.setPromptText("≡");
         filterButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;-fx-arrows-visible: false;-fx-prompt-text-fill: white; ");
+        // Apply the same inline style to genreMenu so they match
+        genreMenu.setStyle(
+                "-fx-background-color: transparent;" +
+                "-fx-text-fill: white;" +
+                "-fx-border-color: #244658;" +
+                "-fx-border-width: 2px;" +
+                "-fx-border-radius: 5;" +
+                "-fx-background-radius: 5;" +
+                "-fx-background-insets: 0;"
+        );
         filterButton.setPrefSize(30,30);
         filterButton.setCellFactory(lv -> new ListCell<String>() {
             @Override
@@ -762,7 +786,6 @@ public class HelloApplication extends Application {
             gameListView.refresh();
         });
         //HBox searchBox = new HBox(10,searchField,filterButton);
-/// ////////////
         Label tagLabel = new Label("Filter by Tags:");
         tagLabel.setTextFill(Color.WHITE);
         tagLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
@@ -771,7 +794,7 @@ public class HelloApplication extends Application {
         tagFilterBox.setSpacing(5);
 
         HBox searchBox = new HBox(10, searchField , filterButton, genreMenu);
-        /// ///////////
+
 
 
 
@@ -1251,7 +1274,9 @@ public class HelloApplication extends Application {
 
                 boolean matchesGenre =
                         selectedGenres.isEmpty() ||
-                        (g.getGameGenre() != null && selectedGenres.contains(g.getGameGenre()));
+                        (g.getGameGenre() != null &&
+                         Arrays.stream(g.getGameGenre().toLowerCase().split("\\s+"))
+                               .anyMatch(selectedGenres::contains));
 
                 boolean matchesTags =
                         selectedTags.isEmpty() || g.getTags().containsAll(selectedTags);

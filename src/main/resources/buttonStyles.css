@@ -35,3 +35,41 @@
     -fx-padding: 2px;
     -fx-mark-color: white;
 }
+.genre-menu {
+    -fx-background-color: transparent;
+    -fx-border-color: #244658;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.genre-menu > .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+.genre-menu .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.genre-menu .menu-item {
+    -fx-background-color: #244658;
+    -fx-border-color: #1e1e1e;
+    -fx-border-width: 3px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+genre-menu .menu-item:hover {
+    -fx-background-color: derive(#244658, 20%); /
+}
+
+.genre-menu .menu-item:focused {
+    -fx-background-color: derive(#244658, 40%);
+}
+.genre-menu .menu-item .label {
+    -fx-text-fill: white;
+}
+
+.genre-menu .menu-item:selected .check-mark {
+    -fx-mark-color: white;
+}
