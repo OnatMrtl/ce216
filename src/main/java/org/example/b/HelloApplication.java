@@ -1127,7 +1127,139 @@ public class HelloApplication extends Application {
         BorderPane menuPane = new BorderPane();
         menuPane.getStyleClass().add("top-menu");
 
-        HBox leftMenu = new HBox(5, helpButton, importButton, exportButton, clockLabel);
+        // --- Add Button (+) ---
+        Button addButton = new Button("+");
+        addButton.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        addButton.getStyleClass().add("button");
+
+        addButton.setOnAction(e -> {
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setTitle(messages.getString("add"));
+            dialog.initOwner(stage);
+            dialog.initModality(Modality.APPLICATION_MODAL);
+
+            DialogPane pane = dialog.getDialogPane();
+            GridPane grid = new GridPane();
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.setPadding(new Insets(20));
+
+            VBox contentBox = new VBox(grid);
+            contentBox.setPadding(new Insets(20));
+            BackgroundImage bgImage = new BackgroundImage(
+                backgroundImage,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+            );
+            contentBox.setBackground(new Background(bgImage));
+            pane.setBackground(new Background(bgImage));
+
+            TextField nameField = new TextField();
+            TextField genreField = new TextField();
+            TextField devField = new TextField();
+            TextField pubField = new TextField();
+            TextField yearField = new TextField();
+            TextField steamIDField = new TextField();
+            TextField tagsField = new TextField();
+
+            Label imagePathLabel = new Label();
+            imagePathLabel.setTextFill(Color.WHITE);
+            imagePathLabel.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+
+            Button uploadButton = new Button(messages.getString("chooseFile"));
+            uploadButton.getStyleClass().add("button");
+            uploadButton.setOnAction(ev -> {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select Cover Image");
+                fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp")
+                );
+                File selectedFile = fileChooser.showOpenDialog(stage);
+                if (selectedFile != null) {
+                    try {
+                        File destDir = new File("cover_arts");
+                        if (!destDir.exists()) destDir.mkdirs();
+                        String targetFileName = selectedFile.getName().replaceAll("\\s+", "_");
+                        File destFile = new File(destDir, targetFileName);
+                        Files.copy(selectedFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        destFile.setLastModified(System.currentTimeMillis());
+                        imagePathLabel.setText("cover_arts/" + targetFileName);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+
+            String style = searchField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;";
+            for (TextField tf : List.of(nameField, genreField, devField, pubField, yearField, steamIDField, tagsField)) {
+                tf.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
+                tf.setPrefHeight(30);
+                tf.setStyle(style);
+            }
+
+            Label[] labels = {
+                new Label(messages.getString("gameName") + ":"), new Label(messages.getString("genre") + ":"),
+                new Label(messages.getString("developer") + ":"), new Label(messages.getString("publisher") + ":"),
+                new Label(messages.getString("releaseDate") + ":"), new Label("SteamID:"),
+                new Label(messages.getString("tags") + ":")
+            };
+
+            TextField[] fields = {nameField, genreField, devField, pubField, yearField, steamIDField, tagsField};
+
+            for (int i = 0; i < fields.length; i++) {
+                labels[i].setTextFill(Color.WHITE);
+                labels[i].setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                grid.add(labels[i], 0, i);
+                grid.add(fields[i], 1, i);
+            }
+
+            // Replace the coverImage label creation with explicit style
+            Label coverImageLabel = new Label(messages.getString("coverImage") + ":");
+            coverImageLabel.setTextFill(Color.WHITE);
+            coverImageLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+            grid.add(coverImageLabel, 0, 7);
+            grid.add(uploadButton, 1, 7);
+            grid.add(imagePathLabel, 1, 8);
+
+            pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+            pane.setContent(contentBox);
+
+            Button okButton = (Button) pane.lookupButton(ButtonType.OK);
+            okButton.setText(messages.getString("save"));
+            okButton.getStyleClass().add("button");
+
+            okButton.setOnAction(ev -> {
+                try {
+                    Game newGame = new Game(
+                        nameField.getText(),
+                        genreField.getText(),
+                        devField.getText(),
+                        pubField.getText(),
+                        Integer.parseInt(yearField.getText()),
+                        0f,
+                        "",
+                        Integer.parseInt(steamIDField.getText()),
+                        0f,
+                        imagePathLabel.getText()
+                    );
+                    newGame.setTags(Arrays.stream(tagsField.getText().split(","))
+                            .map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toList()));
+                    allGames.add(newGame);
+                    Collections.sort(allGames, Comparator.comparing(Game::getGameName));
+                    gameList.setAll(allGames);
+                    saveGamesToJson(allGames, "games.json");
+                    gameListView.getSelectionModel().select(newGame);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+
+            dialog.showAndWait();
+        });
+
+        HBox leftMenu = new HBox(5, helpButton, addButton, importButton, exportButton, clockLabel);
         leftMenu.setAlignment(Pos.CENTER_LEFT);
         leftMenu.setPadding(new Insets(5, 10, 5, 10));
 
