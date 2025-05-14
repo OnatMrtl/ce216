@@ -1,12 +1,12 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" name="ce216">
+  <artifact type="javafx" build-on-make="true" name="ce216">
     <output-path>$PROJECT_DIR$/out/artifacts/ce216</output-path>
     <properties id="javafx-properties">
       <options>
         <option name="appClass" value="org.example.b.HelloApplication" />
         <option name="description" value="" />
         <option name="htmlPlaceholderId" value="" />
-        <option name="title" value="CE216 Project" />
+        <option name="title" value="Smoke" />
         <option name="vendor" value="" />
         <option name="version" value="" />
       </options>
@@ -15,6 +15,7 @@
       <element id="archive" name="ce216.jar">
         <element id="module-output" name="ce216" />
       </element>
+      <element id="library" level="application" name="SmokeFX" />
       <element id="library" level="project" name="gson-2.13.1" />
     </root>
   </artifact>

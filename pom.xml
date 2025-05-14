@@ -19,11 +19,13 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>17.0.6</version>
+            <classifier>mac</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>17.0.6</version>
+            <classifier>mac</classifier>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -66,13 +68,15 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>org.example.b/org.example.b.HelloApplication</mainClass>
+                            <mainClass>org.example.b.HelloApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
+                            <modulePath>${java.home}/jmods:~/Downloads/javafx-jmods-24.0.1</modulePath>
+                            <addModules>javafx.base,javafx.graphics,javafx.controls,javafx.fxml,com.google.gson</addModules>
                         </configuration>
                     </execution>
                 </executions>

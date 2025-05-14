@@ -79,7 +79,7 @@ genre-menu .check-box{
 .menu-button .label {
     -fx-text-fill: white;
     -fx-font-family: Arial;
-    -fx-font-style: bold;
+    -fx-font-weight: bold;
 }
 .menu-item{
     -fx-background-color: #1e1e1e;
