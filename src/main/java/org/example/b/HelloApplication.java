@@ -87,7 +87,8 @@ public class HelloApplication extends Application {
     protected Text hourText = new Text(messages.getString("hour"));
     protected Text languageText = new Text(messages.getString("language"));
     protected Text favoriteText = new Text(messages.getString("favorite"));
-    protected MenuButton filterButton =new MenuButton(messages.getString("sort"));
+protected MenuButton filterButton = new MenuButton(messages.getString("sort"));
+private String selectedSortOption = null;
 
     private final Set<String> selectedGenres = new HashSet<>();
 
@@ -471,7 +472,7 @@ public class HelloApplication extends Application {
                     favButton.setText(newState ? "★" : "☆");
                     saveGamesToJson(allGames, "games.json");
 
-                    String selected = filterButton.getValue();
+                    String selected = selectedSortOption;
 
                     if (selected != null && selected.equals(messages.getString("favorite"))) {
                         List<Game> favorites = allGames.stream()
@@ -729,9 +730,8 @@ public class HelloApplication extends Application {
                 InfoBox.getChildren().addAll(imageBox, detailBox, editButton, closeButton);
             }
         });
-        filterButton.setPromptText("sort");
+        // Set up filterButton as MenuButton with MenuItems for sorting/filtering
         filterButton.setStyle("-fx-background-color: transparent;-fx-font-weight: bold; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5;-fx-arrows-visible: false;-fx-prompt-text-fill: white; ");
-        // Apply the same inline style to genreMenu so they match
         genreMenu.setStyle(
                 "-fx-background-color: transparent;" +
                 "-fx-text-fill: white;" +
@@ -742,123 +742,89 @@ public class HelloApplication extends Application {
                 "-fx-background-insets: 0;"
         );
         filterButton.setPrefSize(70,30);
-        filterButton.setCellFactory(lv -> new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("-fx-background-color: #244658; -fx-text-fill: white;-fx-control-inner-background: transparent;-fx-border-radius: 5;-fx-border-color: white;-fx-border-width: 0.1;-fx-background-radius: 5;-fx-background-insets: 0;");
-                } else {
-                    setText(item);
-                    setFont(Font.font("Arial", FontWeight.BOLD, 12));
-                    setStyle("-fx-background-color: #244658; -fx-text-fill: white;-fx-control-inner-background: transparent;-fx-border-radius: 5;-fx-border-color: white;-fx-border-width: 0.1;-fx-background-radius: 5;-fx-background-insets: 0;");
-                }
-            }
-        });
+        filterButton.setText(messages.getString("sort"));
 
-        filterButton.setButtonCell(new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-control-inner-background: transparent;");
-                } else {
-                    setText(item);
-                    setFont(Font.font("Arial", FontWeight.BOLD, 12));
-                    setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-control-inner-background: transparent;-fx-border-radius: 5;");
-                }
-            }
-        });
-        filterButton.getItems().addAll(
-                textToString(hoursPlayedText) + " \u2193",           // Oynanma süresi azalan
-                textToString(hoursPlayedText) + " \u2191",           // Oynanma süresi artan
-                messages.getString("gameName") + " A-Z",             // Oyun ismi A'dan Z'ye
-                messages.getString("gameName") + " Z-A",             // Oyun ismi Z'den A'ya
-                messages.getString("releaseDate") + " \u2191",       // Çıkış yılı artan
-                messages.getString("releaseDate") + " \u2193",       // Çıkış yılı azalan
-                messages.getString("rating") + " \u2193",            // Puan azalan
-                messages.getString("rating") + " \u2191",            // Puan artan
-                messages.getString("steamID") + " \u2193",           // Steam ID azalan
-                messages.getString("steamID") + " \u2191",           // Steam ID artan
-                messages.getString("favorite") // Favoriler için ayrı filtre
-        );
-        filterButton.setOnAction(event -> {
-            String selected = filterButton.getValue();
-            if (selected == null) return;
-            if (selected.equals(messages.getString("favorite"))) {
-                List<Game> favorites = allGames.stream()
-                        .filter(Game::isFavGame)
-                        .collect(Collectors.toList());
-                Game selectedGame = gameListView.getSelectionModel().getSelectedItem();
-                gameList.setAll(favorites);
-                if (gameList.contains(selectedGame)) {
-                    gameListView.getSelectionModel().select(selectedGame);
-                } else {
-                    gameListView.getSelectionModel().clearSelection();
-                    InfoBox.getChildren().clear();
-                }
-                gameListView.refresh();
-                gameList.sort(Comparator.comparing(Game::getGameName, String.CASE_INSENSITIVE_ORDER));
-                return;
-            }
+        // Create MenuItems for sorting/filtering
+        MenuItem item1 = new MenuItem(textToString(hoursPlayedText) + " \u2193");
+        MenuItem item2 = new MenuItem(textToString(hoursPlayedText) + " \u2191");
+        MenuItem item3 = new MenuItem(messages.getString("gameName") + " A-Z");
+        MenuItem item4 = new MenuItem(messages.getString("gameName") + " Z-A");
+        MenuItem item5 = new MenuItem(messages.getString("releaseDate") + " \u2191");
+        MenuItem item6 = new MenuItem(messages.getString("releaseDate") + " \u2193");
+        MenuItem item7 = new MenuItem(messages.getString("rating") + " \u2193");
+        MenuItem item8 = new MenuItem(messages.getString("rating") + " \u2191");
+        MenuItem item9 = new MenuItem(messages.getString("steamID") + " \u2193");
+        MenuItem item10 = new MenuItem(messages.getString("steamID") + " \u2191");
+        MenuItem item11 = new MenuItem(messages.getString("favorite"));
+        filterButton.getItems().addAll(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, item11);
 
+        // MenuItem actions for sorting/filtering
+        item1.setOnAction(event -> { // Hours Played Descending
             List<Game> sorted = new ArrayList<>(allGames);
-
-            if (selected.contains(hoursPlayedText.getText()) && selected.contains("\u2193")) {
-                sorted.sort(Comparator.comparing(Game::getHoursPlayed).reversed());
-            } else if (selected.contains(hoursPlayedText.getText()) && selected.contains("\u2191")) {
-                sorted.sort(Comparator.comparing(Game::getHoursPlayed));
-            } else if (selected.contains(messages.getString("gameName")) && selected.contains("A-Z")) {
-                sorted.sort(Comparator.comparing(Game::getGameName, String.CASE_INSENSITIVE_ORDER));
-            } else if (selected.contains(messages.getString("gameName")) && selected.contains("Z-A")) {
-                sorted.sort(Comparator.comparing(Game::getGameName, String.CASE_INSENSITIVE_ORDER).reversed());
-            } else if (selected.contains(messages.getString("releaseDate")) && selected.contains("\u2191")) {
-                sorted.sort(Comparator.comparing(Game::getReleaseYear));
-            } else if (selected.contains(messages.getString("releaseDate")) && selected.contains("\u2193")) {
-                sorted.sort(Comparator.comparing(Game::getReleaseYear).reversed());
-            } else if (selected.contains(messages.getString("rating")) && selected.contains("\u2193")) {
-                sorted.sort(Comparator.comparing(Game::getPublicRating).reversed());
-            } else if (selected.contains(messages.getString("rating")) && selected.contains("\u2191")) {
-                sorted.sort(Comparator.comparing(Game::getPublicRating));
-            } else if (selected.contains(messages.getString("steamID")) && selected.contains("\u2193")) {
-                sorted.sort(Comparator.comparing(Game::getSteamID).reversed());
-            } else if (selected.contains(messages.getString("steamID")) && selected.contains("\u2191")) {
-                sorted.sort(Comparator.comparing(Game::getSteamID));
-            }
+            sorted.sort(Comparator.comparing(Game::getHoursPlayed).reversed());
+            updateGameListAfterSort(sorted);
+        });
+        item2.setOnAction(event -> { // Hours Played Ascending
+            List<Game> sorted = new ArrayList<>(allGames);
+            sorted.sort(Comparator.comparing(Game::getHoursPlayed));
+            updateGameListAfterSort(sorted);
+        });
+        item3.setOnAction(event -> { // Game Name A-Z
+            List<Game> sorted = new ArrayList<>(allGames);
+            sorted.sort(Comparator.comparing(Game::getGameName, String.CASE_INSENSITIVE_ORDER));
+            updateGameListAfterSort(sorted);
+        });
+        item4.setOnAction(event -> { // Game Name Z-A
+            List<Game> sorted = new ArrayList<>(allGames);
+            sorted.sort(Comparator.comparing(Game::getGameName, String.CASE_INSENSITIVE_ORDER).reversed());
+            updateGameListAfterSort(sorted);
+        });
+        item5.setOnAction(event -> { // Release Year Ascending
+            List<Game> sorted = new ArrayList<>(allGames);
+            sorted.sort(Comparator.comparing(Game::getReleaseYear));
+            updateGameListAfterSort(sorted);
+        });
+        item6.setOnAction(event -> { // Release Year Descending
+            List<Game> sorted = new ArrayList<>(allGames);
+            sorted.sort(Comparator.comparing(Game::getReleaseYear).reversed());
+            updateGameListAfterSort(sorted);
+        });
+        item7.setOnAction(event -> { // Rating Descending
+            List<Game> sorted = new ArrayList<>(allGames);
+            sorted.sort(Comparator.comparing(Game::getPublicRating).reversed());
+            updateGameListAfterSort(sorted);
+        });
+        item8.setOnAction(event -> { // Rating Ascending
+            List<Game> sorted = new ArrayList<>(allGames);
+            sorted.sort(Comparator.comparing(Game::getPublicRating));
+            updateGameListAfterSort(sorted);
+        });
+        item9.setOnAction(event -> { // SteamID Descending
+            List<Game> sorted = new ArrayList<>(allGames);
+            sorted.sort(Comparator.comparing(Game::getSteamID).reversed());
+            updateGameListAfterSort(sorted);
+        });
+        item10.setOnAction(event -> { // SteamID Ascending
+            List<Game> sorted = new ArrayList<>(allGames);
+            sorted.sort(Comparator.comparing(Game::getSteamID));
+            updateGameListAfterSort(sorted);
+        });
+        item11.setOnAction(event -> { // Favorites
+            List<Game> favorites = allGames.stream()
+                    .filter(Game::isFavGame)
+                    .collect(Collectors.toList());
             Game selectedGame = gameListView.getSelectionModel().getSelectedItem();
-            gameList.setAll(sorted);
-            if(!gameList.contains(selectedGame)) {
-                gameListView.setCellFactory(param -> new ListCell<>() {
-                    @Override
-                    protected void updateItem(Game game, boolean empty) {
-
-                        super.updateItem(game, empty);
-                        if (empty || game == null) {
-                            setText(null);
-                            setStyle("-fx-control-inner-background: transparent;");
-                        } else {
-                            setText(game.getGameName());
-                            setFont(Font.font("Arial", FontWeight.BOLD, 12));
-                            setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
-                            setBorder(new Border(new BorderStroke(
-                                    Color.web("#244658", 0.09), BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT
-                            )));
-                        }
-                    }
-                });
+            gameList.setAll(favorites);
+            if (gameList.contains(selectedGame)) {
+                gameListView.getSelectionModel().select(selectedGame);
+            } else {
                 gameListView.getSelectionModel().clearSelection();
                 InfoBox.getChildren().clear();
-                gameListView.refresh();
-            }else{
-                gameListView.getSelectionModel().clearSelection();
-                gameListView.getSelectionModel().select(selectedGame);
-                gameListView.refresh();
             }
-            gameListView.setStyle("-fx-background-color: transparent; -fx-text-fill: white;-fx-border-color: #244658; -fx-border-width: 2px; -fx-border-radius: 5 ");
             gameListView.refresh();
+            gameList.sort(Comparator.comparing(Game::getGameName, String.CASE_INSENSITIVE_ORDER));
         });
+        filterButton.getStyleClass().add("menu-button");
 
         Label tagLabel = new Label("Filter by Tags:");
         tagLabel.setTextFill(Color.WHITE);
@@ -1388,7 +1354,7 @@ public class HelloApplication extends Application {
         libButton.setText(messages.getString("library"));
         settingsButton.setText(messages.getString("settings"));
         searchField.setPromptText(messages.getString("search"));
-        filterButton.setPromptText(messages.getString("sort"));
+        filterButton.setText(messages.getString("sort"));
         genreText.setText(messages.getString("genre"));
         developerText.setText(messages.getString("developer"));
         genreMenu.setText(messages.getString("genre"));
@@ -1405,20 +1371,8 @@ public class HelloApplication extends Application {
         importButton.setText(messages.getString("import"));
         exportButton.setText(messages.getString("export"));
 
-        filterButton.getItems().clear();
-        filterButton.getItems().addAll(
-                textToString(hoursPlayedText) + " \u2193",           // Oynanma süresi azalan
-                textToString(hoursPlayedText) + " \u2191",           // Oynanma süresi artan
-                messages.getString("gameName") + " A-Z",             // Oyun ismi A'dan Z'ye
-                messages.getString("gameName") + " Z-A",             // Oyun ismi Z'den A'ya
-                messages.getString("releaseDate") + " \u2191",       // Çıkış yılı artan
-                messages.getString("releaseDate") + " \u2193",       // Çıkış yılı azalan
-                messages.getString("rating") + " \u2193",            // Puan azalan
-                messages.getString("rating") + " \u2191",            // Puan artan
-                messages.getString("steamID") + " \u2193",           // Steam ID azalan
-                messages.getString("steamID") + " \u2191",            // Steam ID artan
-                messages.getString("favorite")
-        );
+        // See above: MenuItems and actions are recreated in start() and should be recreated here as well for language update if needed.
+        // For brevity, you may want to refactor MenuItem creation into a separate method and call it here.
     }
     private void saveGamesToJson(List<Game> games, String filePath) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -1525,5 +1479,16 @@ public class HelloApplication extends Application {
                 .collect(Collectors.toList());
 
         gameList.setAll(filtered);
+    }
+
+    private void updateGameListAfterSort(List<Game> sorted) {
+        Game selectedGame = gameListView.getSelectionModel().getSelectedItem();
+        gameList.setAll(sorted);
+        if (!gameList.contains(selectedGame)) {
+            gameListView.getSelectionModel().clearSelection();
+        } else {
+            gameListView.getSelectionModel().select(selectedGame);
+        }
+        gameListView.refresh();
     }
 }

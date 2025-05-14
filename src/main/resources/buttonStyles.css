@@ -76,3 +76,20 @@ genre-menu .check-box{
 .genre-menu .menu-item:selected .check-mark {
     -fx-mark-color: white;
 }
+.menu-button .label {
+    -fx-text-fill: white;
+    -fx-font-family: Arial;
+    -fx-font-style: bold;
+}
+.menu-item{
+    -fx-background-color: #1e1e1e;
+    -fx-border-color: #244658;
+    -fx-border-width: 4px;
+}
+.menu-item .label {
+    -fx-text-fill: white;
+    -fx-font-family: Arial;
+    -fx-font-weight: bold;
+    -fx-background-color: #1e1e1e;
+    -fx-background-radius: 8px;
+}
