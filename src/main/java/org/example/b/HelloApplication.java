@@ -76,6 +76,7 @@ public class HelloApplication extends Application {
     protected Button helpButton = new Button("Help");
     protected Button libButton = new Button();
     protected Button editButton = new Button();
+    protected MenuButton genreMenu = new MenuButton(messages.getString("genre"));
     protected Text genreText = new Text(messages.getString("genre"));
     protected Text developerText = new Text(messages.getString("developer"));
     protected Text publisherText = new Text(messages.getString("publisher"));
@@ -191,7 +192,7 @@ public class HelloApplication extends Application {
         });
 
         /* ---------- Multi‑genre filter menu ---------- */
-        MenuButton genreMenu = new MenuButton(messages.getString("genre"));
+        genreMenu = new MenuButton(messages.getString("genre"));
         genreMenu.getStyleClass().add("button");
         genreMenu.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         genreMenu.getStyleClass().add("genre-menu");
@@ -1382,6 +1383,7 @@ public class HelloApplication extends Application {
         searchField.setPromptText(messages.getString("search"));
         genreText.setText(messages.getString("genre"));
         developerText.setText(messages.getString("developer"));
+        genreMenu.setText(messages.getString("genre"));
         publisherText.setText(messages.getString("publisher"));
         releaseYearText.setText(messages.getString("releaseDate"));
         hoursPlayedText.setText(messages.getString("hoursPlayed"));
