@@ -14,5 +14,132 @@
     "tags": [
       "adf"
     ]
+  },
+  {
+    "gameName": "Demon\u0027s Souls",
+    "gameGenre": "Action RPG",
+    "developerName": "FromSoftware",
+    "publisherName": "Bandai Namco",
+    "releaseYear": 2009,
+    "hoursPlayed": 30.0,
+    "gameInfo": "A punishing but rewarding action RPG known for its difficulty.",
+    "SteamID": 0,
+    "publicRating": 90.0,
+    "coverPath": "cover_arts/Demon_Souls_Cover_Art.jpeg",
+    "favGame": false,
+    "tags": [
+      "Challenging",
+      "Souls-like",
+      "Dark Fantasy"
+    ]
+  },
+  {
+    "gameName": "Dark Souls: Remastered",
+    "gameGenre": "Action RPG",
+    "developerName": "FromSoftware",
+    "publisherName": "Bandai Namco",
+    "releaseYear": 2011,
+    "hoursPlayed": 50.0,
+    "gameInfo": "A punishing but rewarding action RPG known for its difficulty.",
+    "SteamID": 570940,
+    "publicRating": 90.0,
+    "coverPath": "cover_arts/Dark_Souls_Remastered_Cover_Art.jpeg",
+    "favGame": false,
+    "tags": [
+      "Challenging",
+      "Souls-like",
+      "Dark Fantasy"
+    ]
+  },
+  {
+    "gameName": "Dark Souls 2: Scholar of the First Sin",
+    "gameGenre": "Action RPG",
+    "developerName": "FromSoftware",
+    "publisherName": "Bandai Namco",
+    "releaseYear": 2011,
+    "hoursPlayed": 40.0,
+    "gameInfo": "A punishing but rewarding action RPG known for its difficulty.",
+    "SteamID": 335300,
+    "publicRating": 90.0,
+    "coverPath": "cover_arts/Dark_Souls_II_Scholar_of_the_First_Sin_Cover_Art.jpg",
+    "favGame": true,
+    "tags": [
+      "Challenging",
+      "Souls-like",
+      "Dark Fantasy"
+    ]
+  },
+  {
+    "gameName": "Bloodborne",
+    "gameGenre": "Action RPG",
+    "developerName": "FromSoftware",
+    "publisherName": "Sony Computer Entertainment",
+    "releaseYear": 2015,
+    "hoursPlayed": 80.0,
+    "gameInfo": "A punishing but rewarding action RPG known for its difficulty.",
+    "SteamID": 0,
+    "publicRating": 96.0,
+    "coverPath": "",
+    "favGame": true,
+    "tags": [
+      "Challenging",
+      "Souls-like",
+      "Dark Fantasy"
+    ]
+  },
+  {
+    "gameName": "Dark Souls 3",
+    "gameGenre": "Action RPG",
+    "developerName": "FromSoftware",
+    "publisherName": "Bandai Namco",
+    "releaseYear": 2016,
+    "hoursPlayed": 40.0,
+    "gameInfo": "A punishing but rewarding action RPG known for its difficulty.",
+    "SteamID": 374320,
+    "publicRating": 94.0,
+    "coverPath": "cover_arts/Dark_Souls_III_Cover_Art.jpeg",
+    "favGame": true,
+    "tags": [
+      "Challenging",
+      "Souls-like",
+      "Dark Fantasy"
+    ]
+  },
+  {
+    "gameName": "Sekiro: Shadows Die Twice",
+    "gameGenre": "Action RPG",
+    "developerName": "FromSoftware",
+    "publisherName": "Activision",
+    "releaseYear": 2019,
+    "hoursPlayed": 55.0,
+    "gameInfo": "A punishing but rewarding action RPG known for its difficulty.",
+    "SteamID": 814380,
+    "publicRating": 92.0,
+    "coverPath": "cover_arts/Sekiro-_Shadows_Die_Twice_Cover_Art.jpg",
+    "favGame": true,
+    "tags": [
+      "Challenging",
+      "Souls-like",
+      "Dark Fantasy"
+    ]
+  },
+  {
+    "gameName": "Elden Ring",
+    "gameGenre": "Action RPG",
+    "developerName": "FromSoftware",
+    "publisherName": "Bandai Namco",
+    "releaseYear": 2022,
+    "hoursPlayed": 150.0,
+    "gameInfo": "Explore the vast world of the Lands Between in this challenging action RPG.",
+    "SteamID": 0,
+    "publicRating": 94.0,
+    "coverPath": "cover_arts/Elden_Ring_Cover_Art.jpg",
+    "favGame": true,
+    "tags": [
+      "Souls-like",
+      "Open World",
+      "Dark Fantasy",
+      "Challenging"
+    ]
   }
 ]

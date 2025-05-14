@@ -3,12 +3,9 @@ module org.example.b {
     requires javafx.graphics;
     requires javafx.controls;
     requires javafx.fxml;
-    requires javafx.media;
-    requires javafx.web;
-    requires javafx.swing;
-    requires java.desktop;
     requires com.google.gson;
+    requires jdk.jfr;
 
-    opens org.example.b to javafx.fxml, com.google.gson;
     exports org.example.b;
+    opens org.example.b;
 }
