@@ -28,6 +28,18 @@
             <classifier>mac</classifier>
         </dependency>
         <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>17.0.6</version>
+            <classifier>win</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>17.0.6</version>
+            <classifier>win</classifier>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.10</version> <!-- Use the latest version -->
@@ -77,6 +89,14 @@
                             <noHeaderFiles>true</noHeaderFiles>
                             <modulePath>${java.home}/jmods:~/Downloads/javafx-jmods-24.0.1</modulePath>
                             <addModules>javafx.base,javafx.graphics,javafx.controls,javafx.fxml,com.google.gson</addModules>
+                            <type>exe</type>
+                            <jpackageHome>${java.home}</jpackageHome>
+                            <!-- Optional Windows installer settings -->
+                            <winMenu>true</winMenu>
+                            <winShortcut>true</winShortcut>
+                            <winConsole>false</winConsole>
+                            <!-- Path to your .ico icon for Windows -->
+                            <icon>src/main/resources/app-icon.ico</icon>
                         </configuration>
                     </execution>
                 </executions>
