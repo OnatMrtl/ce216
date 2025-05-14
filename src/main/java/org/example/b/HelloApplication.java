@@ -20,6 +20,9 @@ import javafx.scene.control.DialogPane;
 import java.util.Optional;
 import java.net.URL;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Button;
 import java.io.File;
 import javafx.scene.layout.Background;
@@ -50,6 +53,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
+import javafx.scene.Node;
 import javafx.util.Duration;
 
 import java.time.LocalTime;
@@ -192,32 +196,77 @@ public class HelloApplication extends Application {
         genreMenu.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         genreMenu.getStyleClass().add("genre-menu");
 
+        // Build the list from ALL tags and genre words (split by comma and space) for the genre menu
         Set<String> genres = allGames.stream()
-                .map(Game::getGameGenre)
-                .filter(Objects::nonNull)
-                .flatMap(s -> Arrays.stream(s.split("\\s+")))
-                .map(String::trim)
-                .filter(str -> {
-                    if (str.isEmpty()) return false;
-                    String lw = str.toLowerCase();
-                    return !Set.of(
-                        "and","or","of","the","vs","in","with",
-                        "&","ve","ile","ya","da","de"
-                    ).contains(lw);
-                })
-                .collect(Collectors.toCollection(TreeSet::new));
+            .flatMap(gm -> {
+                Stream<String> tagStream = gm.getTags() != null ? gm.getTags().stream() : Stream.empty();
+                Stream<String> genreStream = gm.getGameGenre() != null ?
+                    Arrays.stream(gm.getGameGenre().split("[,\\s]+"))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty()) : Stream.empty();
+                return Stream.concat(tagStream, genreStream);
+            })
+            .map(String::trim)
+            .filter(str -> !str.isEmpty())
+            .map(String::toLowerCase)
+            .filter(s -> !Set.of("and", "or", "with", "&").contains(s)) // optional: skip common conjunctions
+            .collect(Collectors.toCollection(TreeSet::new));
 
+        /* ---------- Scrollable tag list inside the menu ---------- */
+        VBox tagBox = new VBox(2);
         for (String g : genres) {
-            CheckMenuItem item = new CheckMenuItem(g);
-            item.selectedProperty().addListener((obs, oldVal, now) -> {
+            CheckBox cb = new CheckBox(Arrays.stream(g.split("[\\s\\-]"))
+                .map(s -> s.isEmpty() ? s : Character.toUpperCase(s.charAt(0)) + s.substring(1))
+                .collect(Collectors.joining(g.contains("-") ? "-" : " ")));
+            cb.setTextFill(Color.WHITE);
+            cb.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+            cb.getStyleClass().add("genre-checkbox");
+            cb.selectedProperty().addListener((obs, oldVal, now) -> {
                 if (now)  selectedGenres.add(g.toLowerCase());
                 else      selectedGenres.remove(g.toLowerCase());
                 applyCombinedFilter();
-                // keep menu open
-                Platform.runLater(genreMenu::show);
             });
-            genreMenu.getItems().add(item);
+            tagBox.getChildren().add(cb);
         }
+
+        ScrollPane tagScroll = new ScrollPane(tagBox);
+        tagScroll.setPrefHeight(220);
+        tagScroll.setFitToWidth(true);
+        tagScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        tagScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        tagScroll.setStyle("-fx-background-color: transparent; -fx-background-insets: 0;");
+        // Apply plain dark background instead of image
+        Background plainBackground = new Background(new BackgroundFill(Color.web("#1E1E1E"), CornerRadii.EMPTY, Insets.EMPTY));
+        tagBox.setBackground(plainBackground);
+        tagScroll.setBackground(plainBackground);
+
+        CustomMenuItem scrollItem = new CustomMenuItem(tagScroll, false); // false -> don't hide when clicked
+        genreMenu.getItems().add(scrollItem);
+
+        // --- Add "Clear" button below the scrollable genre menu ---
+        Button clearGenresButton = new Button(messages.getString("clear"));
+        clearGenresButton.getStyleClass().add("button");
+        clearGenresButton.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        clearGenresButton.setOnAction(ev -> {
+            selectedGenres.clear();
+            for (Node node : tagBox.getChildren()) {
+                if (node instanceof CheckBox cb) {
+                    cb.setSelected(false);
+                }
+            }
+            applyCombinedFilter();
+        });
+
+        HBox clearButtonBox = new HBox(clearGenresButton);
+        clearButtonBox.setAlignment(Pos.CENTER);
+
+        VBox tagContainer = new VBox(10, tagScroll, clearButtonBox);
+        tagContainer.setPadding(new Insets(10));
+        tagContainer.setBackground(plainBackground);
+
+        CustomMenuItem fullItem = new CustomMenuItem(tagContainer, false);
+        genreMenu.getItems().clear();
+        genreMenu.getItems().add(fullItem);
 
         tagFilterView = new ListView<>();
         tagFilterView.setPrefHeight(100);
@@ -477,18 +526,6 @@ public class HelloApplication extends Application {
                     steamIDField.setStyle(searchField.getStyle());
                     steamIDField.setStyle(steamIDField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;");
 
-                    /// ///////
-                    TextField tagsField = new TextField(String.join(", ", game.getTags()));
-                    tagsField.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
-                    tagsField.setPrefHeight(30);
-                    tagsField.setStyle(searchField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;");
-
-                    Label tagsLabel = new Label("Tags:");
-                    tagsLabel.setTextFill(Color.WHITE);
-                    tagsLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
-                    grid.add(tagsLabel, 0, 8);
-                    grid.add(tagsField, 1, 8);
-                    /// ////////////
 
                     Label imagePathLabel = new Label(game.getCoverPath());
                     imagePathLabel.setTextFill(Color.WHITE);
@@ -590,6 +627,18 @@ public class HelloApplication extends Application {
                     grid.add(uploadButton, 1, 6);
                     grid.add(imagePathLabel, 1, 7);
 
+                    // Move tags input after imagePathLabel section, update row indices to 8
+                    TextField tagsField = new TextField(String.join(", ", game.getTags()));
+                    tagsField.prefWidthProperty().bind(stage.widthProperty().multiply(0.3));
+                    tagsField.setPrefHeight(30);
+                    tagsField.setStyle(searchField.getStyle() + "; -fx-text-fill: white; -fx-font-family: Arial;");
+
+                    Label tagsLabel = new Label(messages.getString("tags") + ":");
+                    tagsLabel.setTextFill(Color.WHITE);
+                    tagsLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                    grid.add(tagsLabel, 0, 8);
+                    grid.add(tagsField, 1, 8);
+
                     pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
                     pane.setContent(contentBox);
@@ -609,14 +658,11 @@ public class HelloApplication extends Application {
                         game.setReleaseYear(Integer.parseInt(yearField.getText()));
                         game.setSteamID(Integer.parseInt(steamIDField.getText()));
                         game.setCoverPath(imagePathLabel.getText());
-
-                        /// ////////////
                         List<String> parsedTags = Arrays.stream(tagsField.getText().split(","))
                                 .map(String::trim)
                                 .filter(s -> !s.isEmpty())
                                 .collect(Collectors.toList());
                         game.setTags(parsedTags);
-                        /// ////////////
 
 
                         // Refresh gameImageView with new cover path
@@ -650,8 +696,26 @@ public class HelloApplication extends Application {
                     gameListView.getSelectionModel().clearSelection(); // clear list selection
                 });
 
+                // Add tags display before steamIDFlow
+                Text tagsLabel = new Text(messages.getString("tags"));
+                tagsLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                tagsLabel.setFill(Color.WHITE);
+
+                Text tagsContent = new Text(String.join(", ", newValue.getTags()));
+                tagsContent.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
+                tagsContent.setFill(Color.WHITE);
+
+                TextFlow tagsFlow = new TextFlow(
+                        tagsLabel,
+                        new Text(": ") {{
+                            setFont(Font.font("Arial", FontWeight.BOLD, 12));
+                            setFill(Color.WHITE);
+                        }},
+                        tagsContent
+                );
+
                 detailBox.getChildren().setAll(titleLabel, genreFlow, hoursPlayedFlow, developerFlow, publisherFlow,
-                        yearFlow, ratingFlow, descriptionFlow, steamIDFlow);
+                        yearFlow, ratingFlow, descriptionFlow, tagsFlow, steamIDFlow);
                 InfoBox.getChildren().addAll(imageBox, detailBox, editButton, closeButton);
             }
         });
@@ -1261,29 +1325,49 @@ public class HelloApplication extends Application {
     private void applyCombinedFilter() {
         String query = searchField.getText() == null ? "" : searchField.getText().toLowerCase();
         List<String> selectedTags = tagFilterView.getSelectionModel().getSelectedItems();
+        Set<String> ignoredWords = Set.of("and", "or", "with", "&", "the", "a", "an");
 
         List<Game> filtered = allGames.stream()
-            .filter(g -> {
-                boolean matchesQuery =
-                        query.isBlank() ||
-                        (g.getGameName() != null && g.getGameName().toLowerCase().contains(query)) ||
-                        (g.getGameGenre() != null && g.getGameGenre().toLowerCase().contains(query)) ||
-                        (g.getDeveloperName() != null && g.getDeveloperName().toLowerCase().contains(query)) ||
-                        (g.getPublisherName() != null && g.getPublisherName().toLowerCase().contains(query)) ||
-                        String.valueOf(g.getReleaseYear()).contains(query);
+                .filter(g -> {
+                    boolean matchesQuery =
+                            query.isBlank() ||
+                                    (g.getGameName() != null && g.getGameName().toLowerCase().contains(query)) ||
+                                    (g.getGameGenre() != null && g.getGameGenre().toLowerCase().contains(query)) ||
+                                    (g.getDeveloperName() != null && g.getDeveloperName().toLowerCase().contains(query)) ||
+                                    (g.getPublisherName() != null && g.getPublisherName().toLowerCase().contains(query)) ||
+                                    String.valueOf(g.getReleaseYear()).contains(query);
 
-                boolean matchesGenre =
-                        selectedGenres.isEmpty() ||
-                        (g.getGameGenre() != null &&
-                         Arrays.stream(g.getGameGenre().toLowerCase().split("\\s+"))
-                               .anyMatch(selectedGenres::contains));
+                    // Genre kelimelerini ve tag'leri parçala
+                    Set<String> genreWords = new HashSet<>();
+                    if (g.getGameGenre() != null) {
+                        Arrays.stream(g.getGameGenre().split(","))
+                                .flatMap(s -> Arrays.stream(s.split("[\\s\\-]+")))
+                                .map(String::toLowerCase)
+                                .map(String::trim)
+                                .filter(word -> !word.isEmpty() && !ignoredWords.contains(word))
+                                .forEach(genreWords::add);
+                    }
 
-                boolean matchesTags =
-                        selectedTags.isEmpty() || g.getTags().containsAll(selectedTags);
+                    Set<String> tagWords = new HashSet<>();
+                    if (g.getTags() != null) {
+                        g.getTags().stream()
+                                .flatMap(s -> Arrays.stream(s.split("[\\s\\-]+")))
+                                .map(String::toLowerCase)
+                                .map(String::trim)
+                                .filter(word -> !word.isEmpty() && !ignoredWords.contains(word))
+                                .forEach(tagWords::add);
+                    }
 
-                return matchesQuery && matchesGenre && matchesTags;
-            })
-            .collect(Collectors.toList());
+                    boolean matchesGenre = selectedGenres.isEmpty() ||
+                            selectedGenres.stream().anyMatch(selected ->
+                                    genreWords.contains(selected) || tagWords.contains(selected)
+                            );
+
+                    boolean matchesTags = selectedTags.isEmpty() || g.getTags().containsAll(selectedTags);
+
+                    return matchesQuery && matchesGenre && matchesTags;
+                })
+                .collect(Collectors.toList());
 
         gameList.setAll(filtered);
     }

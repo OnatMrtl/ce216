@@ -59,8 +59,8 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
-genre-menu .menu-item:hover {
-    -fx-background-color: derive(#244658, 20%); /
+.genre-menu .menu-item:hover {
+    -fx-background-color: derive(#244658, 20%);
 }
 
 .genre-menu .menu-item:focused {
@@ -68,6 +68,9 @@ genre-menu .menu-item:hover {
 }
 .genre-menu .menu-item .label {
     -fx-text-fill: white;
+}
+genre-menu .check-box{
+    -fx-background-color: transparent ;
 }
 
 .genre-menu .menu-item:selected .check-mark {
